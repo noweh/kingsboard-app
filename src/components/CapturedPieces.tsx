@@ -1,29 +1,50 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PieceSymbol } from 'chess.js';
 
 interface Props {
   onPieceDragStart: (pieceType: string, team: 'w' | 'b') => void;
-  team?: 'w' | 'b';
 }
 
-const AvailablePieces: React.FC<Props> = ({ onPieceDragStart, team = 'w' }) => {
+const AvailablePieces: React.FC<Props> = ({ onPieceDragStart }) => {
+  const [activeTeam, setActiveTeam] = useState<'w' | 'b'>('w');
+
   const pieces = [
-    { type: 'Pawn', symbol: team === 'w' ? '♙' : '♟' },
-    { type: 'Rook', symbol: team === 'w' ? '♖' : '♜' },
-    { type: 'Knight', symbol: team === 'w' ? '♘' : '♞' },
-    { type: 'Bishop', symbol: team === 'w' ? '♗' : '♝' },
-    { type: 'Queen', symbol: team === 'w' ? '♕' : '♛' },
-    { type: 'King', symbol: team === 'w' ? '♔' : '♚' }
+    { type: 'Pawn', symbol: activeTeam === 'w' ? '♙' : '♟' },
+    { type: 'Rook', symbol: activeTeam === 'w' ? '♖' : '♜' },
+    { type: 'Knight', symbol: activeTeam === 'w' ? '♘' : '♞' },
+    { type: 'Bishop', symbol: activeTeam === 'w' ? '♗' : '♝' },
+    { type: 'Queen', symbol: activeTeam === 'w' ? '♕' : '♛' },
+    { type: 'King', symbol: activeTeam === 'w' ? '♔' : '♚' }
   ];
 
   const handleDragStart = (e: React.DragEvent, pieceType: string) => {
-    e.dataTransfer.setData('text/plain', JSON.stringify({ type: pieceType, team }));
-    onPieceDragStart(pieceType, team);
+    e.dataTransfer.setData('text/plain', JSON.stringify({ type: pieceType, team: activeTeam }));
+    onPieceDragStart(pieceType, activeTeam);
+  };
+
+  const handleTeamChange = (team: 'w' | 'b') => {
+    console.log('Changing team to:', team);
+    setActiveTeam(team);
   };
 
   return (
     <div className="available-pieces">
-      <h3>Pièces {team === 'w' ? 'blanches' : 'noires'}</h3>
+      <div className="team-tabs">
+        <button 
+          className={`team-tab ${activeTeam === 'w' ? 'active' : ''}`}
+          onClick={() => handleTeamChange('w')}
+          type="button"
+        >
+          Pièces blanches
+        </button>
+        <button 
+          className={`team-tab ${activeTeam === 'b' ? 'active' : ''}`}
+          onClick={() => handleTeamChange('b')}
+          type="button"
+        >
+          Pièces noires
+        </button>
+      </div>
       <div className="pieces-grid">
         {pieces.map(piece => (
           <div
