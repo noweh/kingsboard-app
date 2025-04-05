@@ -48,19 +48,28 @@ function App() {
   );
   const [view, setView] = useState<'allies' | 'enemies'>('allies');
   const [boardOrientation, setBoardOrientation] = useState<'white' | 'black'>('white');
-  const [boardSize, setBoardSize] = useState(560);
+  const [boardSize, setBoardSize] = useState(450);
   const [showInstructions, setShowInstructions] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Fonction pour afficher un message d'erreur temporaire
+  const showTemporaryError = (message: string) => {
+    setErrorMessage(message);
+    setTimeout(() => {
+      setErrorMessage(null);
+    }, 3000); // Le message disparaît après 3 secondes
+  };
 
   // Fonction pour mettre à jour la taille du plateau en fonction de la largeur de l'écran
   useEffect(() => {
     const updateBoardSize = () => {
       const width = window.innerWidth;
       if (width < 480) {
-        setBoardSize(Math.min(width - 20, 560));
+        setBoardSize(Math.min(width - 20, 450));
       } else if (width < 768) {
-        setBoardSize(Math.min(width - 40, 560));
+        setBoardSize(Math.min(width - 40, 450));
       } else {
-        setBoardSize(560);
+        setBoardSize(450);
       }
     };
 
@@ -323,15 +332,39 @@ function App() {
     const y = e.clientY - boardRect.top;
     
     // Convertir les coordonnées en notation d'échecs (a1, b2, etc.)
-    const file = Math.floor(x / (boardRect.width / 8));
-    const rank = 7 - Math.floor(y / (boardRect.height / 8));
+    // Prendre en compte l'orientation du plateau
+    let file;
+    let rank;
+    
+    if (boardOrientation === 'white') {
+      // Orientation normale (blancs en bas)
+      file = Math.floor(x / (boardRect.width / 8));
+      rank = 7 - Math.floor(y / (boardRect.height / 8));
+    } else {
+      // Plateau inversé (noirs en bas)
+      file = 7 - Math.floor(x / (boardRect.width / 8)); // Inverser la colonne
+      rank = Math.floor(y / (boardRect.height / 8));
+    }
+    
     const targetSquare = `${String.fromCharCode(97 + file)}${rank + 1}` as Square;
+    
+    // Vérifier si c'est un pion et s'il est placé sur une rangée valide
+    const isPawn = pieceData.type === 'Pawn';
+    const isFirstRank = rank === 0;
+    const isLastRank = rank === 7;
+    
+    // Empêcher le placement de pions sur la première ou la dernière rangée
+    if (isPawn && (isFirstRank || isLastRank)) {
+      showTemporaryError('Les pions ne peuvent pas être placés sur la première ou la dernière rangée');
+      return;
+    }
     
     // Ajouter la pièce au plateau
     const gameCopy = new Chess(game.fen());
     
     // Vérifier si la case cible est valide
     if (gameCopy.get(targetSquare)) {
+      showTemporaryError('Cette case est déjà occupée');
       return;
     }
     
@@ -363,12 +396,19 @@ function App() {
         <span className="app-subtitle">Apprentissage des zones d'influence</span>
       </h1>
       
+      {errorMessage && (
+        <div className="error-message">
+          {errorMessage}
+        </div>
+      )}
+      
       <div className="main-content">
         <div className="board-section">
           <div 
             className="board-container"
             onDragOver={handleDragOver}
             onDrop={handleDrop}
+            style={{ width: boardSize, height: boardSize }}
           >
             <Chessboard 
               position={game.fen()}
@@ -393,7 +433,7 @@ function App() {
               }}
               onPieceDragEnd={onPieceDragEnd}
               onSquareClick={onSquareClick}
-              boardWidth={450}
+              boardWidth={boardSize}
               boardOrientation={boardOrientation}
               customBoardStyle={{
                 borderRadius: '8px',

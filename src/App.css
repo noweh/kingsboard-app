@@ -7,6 +7,8 @@
   background-color: #f0f2f5;
   font-family: 'Poppins', 'Arial', sans-serif;
   background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .App-logo {
@@ -89,13 +91,14 @@
 .main-content {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   gap: 30px;
   width: 100%;
   max-width: 900px;
   margin: 20px auto 0;
   min-height: 500px;
+  flex-wrap: wrap;
 }
 
 .board-section {
@@ -110,15 +113,13 @@
 .board-container {
   position: relative;
   margin-bottom: 15px;
-  width: 450px;
-  height: 450px;
+  width: 100%;
+  max-width: 450px;
+  height: auto;
+  aspect-ratio: 1 / 1;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.board-container:hover {
-  /* Suppression de la transformation */
 }
 
 /* Styles pour le plateau d'échecs */
@@ -126,6 +127,9 @@
   width: 100%;
   height: 100%;
   border-radius: 8px;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 /* Personnalisation des couleurs des cases de l'échiquier */
@@ -229,8 +233,13 @@ button::after {
   flex-direction: column;
   gap: 12px;
   align-items: center;
-  justify-content: center;
-  height: 100%;
+  justify-content: flex-start;
+  height: auto;
+  width: 100%;
+  max-width: 250px;
+  overflow-y: visible;
+  overflow-x: hidden;
+  padding-bottom: 10px;
 }
 
 .pieces-bags {
@@ -239,8 +248,9 @@ button::after {
   gap: 12px;
   width: 100%;
   align-items: center;
-  justify-content: center;
-  height: 100%;
+  justify-content: flex-start;
+  height: auto;
+  overflow: visible;
 }
 
 .available-pieces {
@@ -251,13 +261,13 @@ button::after {
   position: relative;
   overflow: visible;
   border: 1px solid rgba(0, 0, 0, 0.05);
-  width: 200px;
+  width: 100%;
   height: auto;
   min-height: 180px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .available-pieces::before {
@@ -297,9 +307,11 @@ button::after {
   position: relative;
   z-index: 1;
   width: 100%;
-  flex: 1;
+  height: auto;
   min-height: 120px;
-  align-items: center;
+  align-items: start;
+  justify-content: center;
+  overflow: visible;
 }
 
 .piece {
@@ -320,6 +332,8 @@ button::after {
   height: 100%;
   margin: 0 auto;
   min-height: 40px;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .piece:hover {
@@ -505,6 +519,7 @@ button::after {
   .main-content {
     flex-direction: column;
     align-items: center;
+    gap: 20px;
   }
   
   .board-section, .pieces-section {
@@ -523,6 +538,11 @@ button::after {
     width: 100%;
     max-width: 450px;
   }
+  
+  .available-pieces {
+    width: 100%;
+    min-height: 160px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -531,24 +551,40 @@ button::after {
   }
   
   .app-title {
-    font-size: 1.6rem;
-    margin-bottom: 10px;
+    margin-bottom: 30px;
   }
   
   .crown-icon {
-    font-size: 1.8rem;
+    font-size: 2.7rem;
+  }
+  
+  .app-subtitle {
+    font-size: 1.1rem;
+    bottom: -25px;
   }
   
   .board-container {
-    max-width: 350px;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
   }
   
   .controls {
-    max-width: 350px;
+    width: 100%;
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+  
+  .control-button {
+    max-width: none;
+    flex: 1 1 calc(50% - 10px);
+    min-width: 120px;
   }
   
   .piece {
     padding: 5px;
+    min-height: 35px;
   }
   
   .piece-symbol {
@@ -563,36 +599,99 @@ button::after {
     padding: 8px 12px;
     font-size: 13px;
   }
+  
+  .available-pieces {
+    width: 100%;
+    min-height: 140px;
+    padding: 10px;
+  }
+  
+  .pieces-section {
+    max-width: 200px;
+  }
 }
 
 @media (max-width: 480px) {
+  .app {
+    padding: 8px;
+    overflow-x: hidden;
+  }
+  
   .app-title {
-    font-size: 1.4rem;
+    font-size: 2.2rem;
+    margin-bottom: 25px;
   }
   
   .crown-icon {
-    font-size: 1.6rem;
+    font-size: 2.4rem;
   }
   
   .app-subtitle {
-    font-size: 0.8rem;
-    bottom: -12px;
+    font-size: 1rem;
+    bottom: -22px;
   }
   
   .board-container {
-    max-width: 300px;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
   }
   
   .controls {
-    max-width: 300px;
+    width: 100%;
+    max-width: 100%;
+    flex-direction: column;
+  }
+  
+  .control-button {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+  
+  .pieces-section {
+    width: 100%;
+    max-width: 180px;
+    margin-top: 10px;
+    max-height: none;
+  }
+  
+  .pieces-bags {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .available-pieces {
+    width: 100%;
+    min-height: 100px;
+    padding: 6px;
   }
   
   .available-pieces h3 {
-    font-size: 16px;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  
+  .pieces-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    width: 100%;
+  }
+  
+  .piece {
+    padding: 3px;
+    min-height: 25px;
+    max-width: 50px;
+    margin: 0 auto;
   }
   
   .piece-symbol {
-    font-size: 16px;
+    font-size: 14px;
+  }
+  
+  .error-message {
+    font-size: 12px;
+    padding: 8px 12px;
   }
 }
 
@@ -642,6 +741,8 @@ button::after {
   text-align: center;
   position: relative;
   z-index: 10;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
 }
 
 .team-tab:hover {
@@ -649,7 +750,58 @@ button::after {
 }
 
 .team-tab.active {
-  color: #2c3e50;
+  color: white;
+  background-color: #34495e;
   border-bottom-color: #34495e;
   font-weight: 500;
+  border-radius: 4px 4px 0 0;
+}
+
+.team-tab:focus {
+  outline: none;
+}
+
+/* Media Queries pour la responsivité */
+@media (max-width: 480px) {
+  .team-tab {
+    padding: 10px 15px;
+    font-size: 13px;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  
+  .team-tab:active {
+    background-color: transparent;
+  }
+  
+  .team-tab.active {
+    color: white;
+    background-color: #34495e;
+  }
+}
+
+.error-message {
+  background-color: #e74c3c;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 4px;
+  margin: 10px auto;
+  max-width: 600px;
+  text-align: center;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-out;
+  position: relative;
+  z-index: 10;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
