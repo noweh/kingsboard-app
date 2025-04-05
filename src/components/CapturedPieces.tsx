@@ -8,12 +8,12 @@ interface Props {
 
 const AvailablePieces: React.FC<Props> = ({ onPieceDragStart, team = 'w' }) => {
   const pieces = [
-    { type: 'Pawn', symbol: team === 'w' ? '♙' : '♟', name: 'Pion' },
-    { type: 'Rook', symbol: team === 'w' ? '♖' : '♜', name: 'Tour' },
-    { type: 'Knight', symbol: team === 'w' ? '♘' : '♞', name: 'Cavalier' },
-    { type: 'Bishop', symbol: team === 'w' ? '♗' : '♝', name: 'Fou' },
-    { type: 'Queen', symbol: team === 'w' ? '♕' : '♛', name: 'Dame' },
-    { type: 'King', symbol: team === 'w' ? '♔' : '♚', name: 'Roi' }
+    { type: 'Pawn', symbol: team === 'w' ? '♙' : '♟' },
+    { type: 'Rook', symbol: team === 'w' ? '♖' : '♜' },
+    { type: 'Knight', symbol: team === 'w' ? '♘' : '♞' },
+    { type: 'Bishop', symbol: team === 'w' ? '♗' : '♝' },
+    { type: 'Queen', symbol: team === 'w' ? '♕' : '♛' },
+    { type: 'King', symbol: team === 'w' ? '♔' : '♚' }
   ];
 
   const handleDragStart = (e: React.DragEvent, pieceType: string) => {
@@ -33,7 +33,6 @@ const AvailablePieces: React.FC<Props> = ({ onPieceDragStart, team = 'w' }) => {
             onDragStart={(e) => handleDragStart(e, piece.type)}
           >
             <span className="piece-symbol">{piece.symbol}</span>
-            <span className="piece-name">{piece.name}</span>
           </div>
         ))}
       </div>

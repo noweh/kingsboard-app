@@ -48,6 +48,32 @@ function App() {
   );
   const [view, setView] = useState<'allies' | 'enemies'>('allies');
   const [boardOrientation, setBoardOrientation] = useState<'white' | 'black'>('white');
+  const [boardSize, setBoardSize] = useState(560);
+
+  // Fonction pour mettre à jour la taille du plateau en fonction de la largeur de l'écran
+  useEffect(() => {
+    const updateBoardSize = () => {
+      const width = window.innerWidth;
+      if (width < 480) {
+        setBoardSize(Math.min(width - 20, 560));
+      } else if (width < 768) {
+        setBoardSize(Math.min(width - 40, 560));
+      } else {
+        setBoardSize(560);
+      }
+    };
+
+    // Mettre à jour la taille initiale
+    updateBoardSize();
+
+    // Ajouter un écouteur d'événements pour redimensionner
+    window.addEventListener('resize', updateBoardSize);
+
+    // Nettoyer l'écouteur d'événements
+    return () => {
+      window.removeEventListener('resize', updateBoardSize);
+    };
+  }, []);
 
   // Fonction pour obtenir les pièces à partir du FEN
   const getPiecesFromFen = (fen: string, currentView: 'allies' | 'enemies'): ApiPiece[] => {
@@ -333,6 +359,7 @@ function App() {
       <h1 className="app-title">
         <span className="crown-icon">👑</span>
         King's Board
+        <span className="app-subtitle">Échiquier interactif</span>
       </h1>
       
       <div className="game-container">
@@ -364,21 +391,25 @@ function App() {
             }}
             onPieceDragEnd={onPieceDragEnd}
             onSquareClick={onSquareClick}
-            boardWidth={560}
+            boardWidth={boardSize}
             boardOrientation={boardOrientation}
             customBoardStyle={{
-              borderRadius: '4px',
-              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)'
+              borderRadius: '8px',
+              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)'
             }}
+            customDarkSquareStyle={{ backgroundColor: '#34495e' }}
+            customLightSquareStyle={{ backgroundColor: '#f5f7fa' }}
           />
           <InfluenceBoard board={influenceBoard} boardOrientation={boardOrientation} />
         </div>
         
         <div className="controls">
-          <button onClick={toggleView}>
+          <button onClick={toggleView} className="control-button">
+            <span className="button-icon">👁️</span>
             Voir les zones d'influence {view === 'allies' ? 'noirs' : 'blancs'}
           </button>
-          <button onClick={toggleBoardOrientation}>
+          <button onClick={toggleBoardOrientation} className="control-button">
+            <span className="button-icon">🔄</span>
             Inverser le plateau ({boardOrientation === 'white' ? 'Noirs en bas' : 'Blancs en bas'})
           </button>
           <div className="pieces-bags">
@@ -389,9 +420,10 @@ function App() {
       </div>
       
       <div className="instructions">
-        <p>Click on a piece to select it, then use arrow keys to move it.</p>
-        <p>Drag pieces from the bag to place them on the board.</p>
-        <p>Drag pieces off the board to remove them.</p>
+        <h3 className="instructions-title">Guide d'utilisation</h3>
+        <p>Faites glisser les pièces depuis les sacs pour les placer sur l'échiquier.</p>
+        <p>Déplacez les pièces sur l'échiquier en les faisant glisser d'une case à l'autre.</p>
+        <p>Faites glisser les pièces hors de l'échiquier pour les retirer.</p>
       </div>
     </div>
   );
