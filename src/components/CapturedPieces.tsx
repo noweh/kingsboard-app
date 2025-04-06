@@ -24,15 +24,26 @@ const AvailablePieces: React.FC<Props> = ({ onPieceDragStart, onPieceClick, rese
     { type: 'Knight', symbol: activeTeam === 'w' ? '♘' : '♞' },
     { type: 'Bishop', symbol: activeTeam === 'w' ? '♗' : '♝' },
     { type: 'Queen', symbol: activeTeam === 'w' ? '♕' : '♛' },
-    { type: 'King', symbol: activeTeam === 'w' ? '♔' : '♚' }
+    { type: 'King', symbol: activeTeam === 'w' ? '♔' : '♚', disabled: true }
   ];
 
   const handleDragStart = (e: React.DragEvent, pieceType: string) => {
+    // Empêcher le glisser-déposer pour le roi
+    if (pieceType === 'King') {
+      e.preventDefault();
+      return;
+    }
+    
     e.dataTransfer.setData('text/plain', JSON.stringify({ type: pieceType, team: activeTeam }));
     onPieceDragStart(pieceType, activeTeam);
   };
 
   const handlePieceClick = (pieceType: string) => {
+    // Empêcher la sélection du roi
+    if (pieceType === 'King') {
+      return;
+    }
+    
     // Si on clique sur la même pièce, on désélectionne
     if (selectedPiece === pieceType) {
       setSelectedPiece(null);
@@ -76,8 +87,8 @@ const AvailablePieces: React.FC<Props> = ({ onPieceDragStart, onPieceClick, rese
         {pieces.map(piece => (
           <div
             key={piece.type}
-            className={`piece ${selectedPiece === piece.type ? 'selected' : ''}`}
-            draggable
+            className={`piece ${selectedPiece === piece.type ? 'selected' : ''} ${piece.disabled ? 'disabled' : ''}`}
+            draggable={!piece.disabled}
             onDragStart={(e) => handleDragStart(e, piece.type)}
             onClick={() => handlePieceClick(piece.type)}
           >

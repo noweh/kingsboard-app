@@ -1157,3 +1157,18 @@ button:active {
   margin: 6px 0;
   color: #495057;
 }
+
+.piece.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f0f0f0;
+}
+
+.piece.disabled:hover {
+  transform: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.piece.disabled .piece-symbol {
+  color: #999;
+}

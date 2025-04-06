@@ -190,6 +190,12 @@ function App() {
         return false;
       }
       
+      // Vérifier si la pièce cible est un roi
+      if (targetPiece && targetPiece.type === 'k') {
+        showTemporaryError('Le roi ne peut pas être capturé');
+        return false;
+      }
+      
       // Utiliser une approche personnalisée pour les mouvements
       const gameCopy = new Chess(game.fen());
       
@@ -303,6 +309,14 @@ function App() {
         
         // Ne supprimer la pièce que si elle n'a pas été déposée sur le plateau
         if (!isOnBoard) {
+          // Vérifier si la pièce est un roi
+          const piece = game.get(draggedSourceSquare);
+          if (piece && piece.type === 'k') {
+            // Ne pas supprimer le roi, afficher un message d'erreur
+            showTemporaryError('Le roi ne peut pas être retiré du plateau');
+            return;
+          }
+          
           const gameCopy = new Chess(game.fen());
           gameCopy.remove(draggedSourceSquare);
           setGame(gameCopy);
