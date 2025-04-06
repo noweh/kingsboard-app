@@ -393,9 +393,9 @@ function App() {
     <div className="app">
       <h1 className="app-title">
         <span className="crown-icon">👑</span>
-        King's Board
-        <span className="app-subtitle">Apprentissage des zones d'influence</span>
+        Kings Board
       </h1>
+      <p className="app-subtitle">Apprentissage des zones d'influence</p>
       
       {errorMessage && (
         <div className="error-message">
@@ -404,6 +404,37 @@ function App() {
       )}
       
       <div className="main-content">
+        <div className="pieces-section-wrapper">
+          <div className="pieces-section">
+            <div className="pieces-bags">
+              <AvailablePieces 
+                onPieceDragStart={handlePieceDragStart} 
+              />
+            </div>
+          </div>
+          
+          {/* Légende des couleurs d'influence */}
+          <div className="legend-container">
+            <h3 className="legend-title">Légende</h3>
+            <div className="legend-item">
+              <div className="legend-color yellow"></div>
+              <div className="legend-text">Cases contrôlées par vos pièces</div>
+            </div>
+            <div className="legend-item">
+              <div className="legend-color green"></div>
+              <div className="legend-text">Pièces alliées défendues</div>
+            </div>
+            <div className="legend-item">
+              <div className="legend-color red"></div>
+              <div className="legend-text">Pièces ennemies en ligne de vue</div>
+            </div>
+            <div className="legend-item">
+              <div className="legend-color x-count">X</div>
+              <div className="legend-text">Nombre de pièces ciblant une case</div>
+            </div>
+          </div>
+        </div>
+
         <div className="board-section">
           <div 
             className="board-container"
@@ -451,45 +482,16 @@ function App() {
           <div className="controls">
             <button onClick={toggleView} className="control-button">
               <span className="button-icon">🎯</span>
-              <span className="button-text">Voir les zones d'influence {view === 'allies' ? 'noirs' : 'blancs'}</span>
+              <span className="button-text">Voir {view === 'allies' ? 'noirs' : 'blancs'}</span>
             </button>
             <button onClick={toggleBoardOrientation} className="control-button">
               <span className="button-icon">🔄</span>
-              <span className="button-text">Inverser le plateau</span>
+              <span className="button-text">Retourner</span>
             </button>
             <button onClick={() => setShowInfluenceColors(!showInfluenceColors)} className="control-button">
               <span className="button-icon">{showInfluenceColors ? '🙈' : '👁️'}</span>
-              <span className="button-text">{showInfluenceColors ? 'Masquer infos' : 'Afficher infos'}</span>
+              <span className="button-text">{showInfluenceColors ? 'Masquer' : 'Afficher'}</span>
             </button>
-          </div>
-        </div>
-        
-        <div className="pieces-section">
-          <div className="pieces-bags">
-            <AvailablePieces 
-              onPieceDragStart={handlePieceDragStart} 
-            />
-          </div>
-          
-          {/* Légende des couleurs d'influence */}
-          <div className="legend-container">
-            <h3 className="legend-title">Légende</h3>
-            <div className="legend-item">
-              <div className="legend-color yellow"></div>
-              <div className="legend-text">Cases contrôlées par vos pièces</div>
-            </div>
-            <div className="legend-item">
-              <div className="legend-color green"></div>
-              <div className="legend-text">Pièces alliées défendues</div>
-            </div>
-            <div className="legend-item">
-              <div className="legend-color red"></div>
-              <div className="legend-text">Pièces ennemies en ligne de vue</div>
-            </div>
-            <div className="legend-item">
-              <div className="legend-color x-count">X</div>
-              <div className="legend-text">Nombre de pièces ciblant une case</div>
-            </div>
           </div>
         </div>
       </div>

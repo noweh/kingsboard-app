@@ -51,7 +51,7 @@
   flex-direction: row;
   align-items: center;
   gap: 10px;
-  margin-bottom: 40px;
+  margin-bottom: 10px;
   color: black;
   font-size: 2.5rem;
   font-weight: 800;
@@ -77,14 +77,11 @@
   font-size: 1.1rem;
   font-weight: 600;
   color: #34495e;
-  margin-top: 5px;
-  margin-bottom: 10px;
+  margin-top: 0;
+  margin-bottom: 15px;
   text-align: center;
   white-space: nowrap;
-  position: absolute;
-  bottom: -30px;
-  left: 50%;
-  transform: translateX(-50%);
+  width: 100%;
   letter-spacing: 0.5px;
 }
 
@@ -608,7 +605,7 @@ button:active {
   
   .app-title {
     font-size: 2.2rem;
-    margin-bottom: 25px;
+    margin-bottom: 10px;
   }
   
   .crown-icon {
@@ -619,114 +616,221 @@ button:active {
     font-size: 1rem;
     bottom: -22px;
   }
-  
+
+  .main-content {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pieces-section-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+    margin-bottom: 8px;
+    order: 1;
+  }
+
+  .pieces-section {
+    width: 52%;
+    max-width: 52%;
+    margin: 0;
+    padding-bottom: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .board-section {
+    order: 2;
+    width: 100%;
+    max-width: 100%;
+  }
+
   .board-container {
     width: 100%;
     max-width: 100%;
     height: auto;
     aspect-ratio: 1 / 1;
   }
-  
+
+  .available-pieces {
+    min-height: unset;
+    padding: 6px;
+    height: auto;
+    overflow: visible;
+  }
+
+  .pieces-grid {
+    gap: 3px;
+    min-height: 0;
+    height: auto;
+  }
+
+  .piece {
+    padding: 2px;
+    min-height: 22px;
+    max-width: 45px;
+    margin: 0 auto;
+  }
+
+  .piece-symbol {
+    font-size: 13px;
+  }
+
+  .legend-container {
+    width: 46%;
+    max-width: 46%;
+    margin: 0;
+    padding: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .legend-title {
+    font-size: 0.7em;
+    margin-bottom: 1px;
+  }
+
+  .legend-item {
+    margin-bottom: 1px;
+    gap: 1px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .legend-color {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+  }
+
+  .legend-text {
+    font-size: 12px;
+    color: #666;
+    flex: 1;
+    line-height: 1.4;
+  }
+
   .controls {
     width: 100%;
     max-width: 450px;
     flex-direction: row;
-    justify-content: center;
-    gap: 4px;
+    justify-content: space-between;
+    gap: 6px;
     padding: 0 4px;
     margin-top: 4px;
   }
-  
-  .control-button {
-    width: 36px;
-    height: 36px;
-    padding: 6px;
-    margin-bottom: 0;
-    flex: 0 0 auto;
-    min-width: unset;
-    max-width: unset;
-    min-height: unset;
-  }
-  
-  .button-icon {
-    margin-right: 0;
-    font-size: 1.6em;
-  }
-  
-  .button-text {
-    display: none;
-  }
-  
-  .pieces-section {
-    width: 100%;
-    max-width: 180px;
-    margin-top: 10px;
-    max-height: none;
-  }
-  
-  .pieces-bags {
-    width: 100%;
-    max-width: 100%;
-  }
-  
-  .available-pieces {
-    width: 100%;
-    min-height: 100px;
-    padding: 6px;
-  }
-  
-  .available-pieces h3 {
-    font-size: 14px;
-    margin-bottom: 6px;
-  }
-  
-  .pieces-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    width: 100%;
-  }
-  
-  .piece {
-    padding: 3px;
-    min-height: 25px;
-    max-width: 50px;
-    margin: 0 auto;
-  }
-  
-  .piece-symbol {
-    font-size: 14px;
-  }
-  
-  .error-message {
-    font-size: 12px;
-    padding: 8px 12px;
-  }
-  
-  .button-icon {
-    margin-right: 0;
-    font-size: 1.6em;
-  }
-  
-  .control-button {
-    width: auto;
-    aspect-ratio: 1;
-    padding: 8px;
+
+  .controls .control-button {
+    width: 30%;
+    height: 52px;
+    padding: 6px 4px;
     margin-bottom: 0;
     flex: 1;
     min-width: unset;
     max-width: unset;
+    min-height: unset;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: #34495e;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
   }
-  
-  .button-text {
+
+  .controls .button-icon {
+    margin-right: 0;
+    font-size: 1.8em;
+    margin-bottom: 4px;
+  }
+
+  .controls .button-text {
+    display: block !important;
+    font-size: 0.7em;
+    line-height: 1.2;
+    text-align: center;
+    white-space: nowrap;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    padding: 0 2px;
+  }
+
+  .available-pieces h3 {
+    font-size: 9px;
+    margin-bottom: 2px;
+    height: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+  }
+
+  .available-pieces h3::after {
+    content: attr(data-short);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .available-pieces h3 span {
     display: none;
   }
-  
-  .controls {
-    flex-direction: row;
+
+  .team-tab {
+    font-size: 0.9em;
+    padding: 8px 12px;
+    position: relative;
+    min-width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 0 6px;
-    margin-top: 6px;
+  }
+
+  .team-tab span {
+    display: none;
+  }
+
+  .team-tab::after {
+    content: attr(data-short);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2em;
+  }
+
+  .team-tab.active {
+    background-color: #3498db;
+    color: white;
+  }
+
+  .about-content p, 
+  .about-content li,
+  .instructions-list li {
+    font-size: 12px;
+    line-height: 1.4;
+    margin: 6px 0;
+    color: #495057;
+  }
+
+  .about-header h3 {
+    font-size: 0.9em;
+  }
+
+  .about-toggle {
+    font-size: 0.9em;
   }
 }
 
@@ -891,9 +995,10 @@ button:active {
 }
 
 .legend-text {
-  font-size: 0.85em;
+  font-size: 12px;
   color: #666;
   flex: 1;
+  line-height: 1.4;
 }
 
 @keyframes fadeIn {
@@ -954,4 +1059,12 @@ button:active {
   margin: 10px 0;
   color: #333;
   line-height: 1.5;
+  font-size: 12px;
+}
+
+.about-content li {
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 6px 0;
+  color: #495057;
 }

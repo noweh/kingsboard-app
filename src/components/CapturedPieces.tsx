@@ -34,15 +34,17 @@ const AvailablePieces: React.FC<Props> = ({ onPieceDragStart }) => {
           className={`team-tab ${activeTeam === 'w' ? 'active' : ''}`}
           onClick={() => handleTeamChange('w')}
           type="button"
+          data-short="⚪"
         >
-          Pièces blanches
+          <span>Pièces blanches</span>
         </button>
         <button 
           className={`team-tab ${activeTeam === 'b' ? 'active' : ''}`}
           onClick={() => handleTeamChange('b')}
           type="button"
+          data-short="⚫"
         >
-          Pièces noires
+          <span>Pièces noires</span>
         </button>
       </div>
       <div className="pieces-grid">
