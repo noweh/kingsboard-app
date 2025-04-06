@@ -450,16 +450,16 @@ function App() {
           
           <div className="controls">
             <button onClick={toggleView} className="control-button">
-              <span className="button-icon">👁️</span>
-              Voir les zones d'influence {view === 'allies' ? 'noirs' : 'blancs'}
+              <span className="button-icon">🎯</span>
+              <span className="button-text">Voir les zones d'influence {view === 'allies' ? 'noirs' : 'blancs'}</span>
             </button>
             <button onClick={toggleBoardOrientation} className="control-button">
               <span className="button-icon">🔄</span>
-              Inverser le plateau ({boardOrientation === 'white' ? 'Noirs en bas' : 'Blancs en bas'})
+              <span className="button-text">Inverser le plateau</span>
             </button>
             <button onClick={() => setShowInfluenceColors(!showInfluenceColors)} className="control-button">
-              <span className="button-icon">ℹ️</span>
-              {showInfluenceColors ? 'Masquer infos' : 'Afficher infos'}
+              <span className="button-icon">{showInfluenceColors ? '🙈' : '👁️'}</span>
+              <span className="button-text">{showInfluenceColors ? 'Masquer infos' : 'Afficher infos'}</span>
             </button>
           </div>
         </div>
