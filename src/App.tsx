@@ -39,7 +39,7 @@ const convertPieceTypeToApi = (type: string): string => {
 };
 
 function App() {
-  const [game, setGame] = useState(new Chess());
+  const [game, setGame] = useState<Chess>(new Chess());
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
   const [draggedPiece, setDraggedPiece] = useState<{ type: PieceSymbol, team: 'w' | 'b' } | null>(null);
   const [draggedSourceSquare, setDraggedSourceSquare] = useState<Square | null>(null);
@@ -49,7 +49,8 @@ function App() {
   const [view, setView] = useState<'allies' | 'enemies'>('allies');
   const [boardOrientation, setBoardOrientation] = useState<'white' | 'black'>('white');
   const [boardSize, setBoardSize] = useState(450);
-  const [showInstructions, setShowInstructions] = useState(false);
+  const [showInfluenceColors, setShowInfluenceColors] = useState(true);
+  const [showAboutSection, setShowAboutSection] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Fonction pour afficher un message d'erreur temporaire
@@ -442,7 +443,9 @@ function App() {
               customDarkSquareStyle={{ backgroundColor: '#34495e' }}
               customLightSquareStyle={{ backgroundColor: '#f5f7fa' }}
             />
-            <InfluenceBoard board={influenceBoard} boardOrientation={boardOrientation} />
+            {showInfluenceColors && (
+              <InfluenceBoard board={influenceBoard} boardOrientation={boardOrientation} />
+            )}
           </div>
           
           <div className="controls">
@@ -454,9 +457,9 @@ function App() {
               <span className="button-icon">🔄</span>
               Inverser le plateau ({boardOrientation === 'white' ? 'Noirs en bas' : 'Blancs en bas'})
             </button>
-            <button onClick={() => setShowInstructions(!showInstructions)} className="control-button">
+            <button onClick={() => setShowInfluenceColors(!showInfluenceColors)} className="control-button">
               <span className="button-icon">ℹ️</span>
-              {showInstructions ? 'Masquer infos' : 'Afficher infos'}
+              {showInfluenceColors ? 'Masquer infos' : 'Afficher infos'}
             </button>
           </div>
         </div>
@@ -467,13 +470,43 @@ function App() {
               onPieceDragStart={handlePieceDragStart} 
             />
           </div>
+          
+          {/* Légende des couleurs d'influence */}
+          <div className="legend-container">
+            <h3 className="legend-title">Légende</h3>
+            <div className="legend-item">
+              <div className="legend-color" style={{ backgroundColor: 'rgba(255, 255, 0, 0.3)' }}></div>
+              <div className="legend-text">Cases contrôlées par vos pièces</div>
+            </div>
+            <div className="legend-item">
+              <div className="legend-color" style={{ backgroundColor: 'rgba(0, 255, 0, 0.3)' }}></div>
+              <div className="legend-text">Pièces alliées défendues</div>
+            </div>
+            <div className="legend-item">
+              <div className="legend-color" style={{ backgroundColor: 'rgba(255, 0, 0, 0.3)' }}></div>
+              <div className="legend-text">Pièces ennemies en ligne de vue</div>
+            </div>
+            <div className="legend-item">
+              <div className="legend-color x-count">X</div>
+              <div className="legend-text">Nombre de pièces ciblant une case</div>
+            </div>
+          </div>
         </div>
       </div>
       
-      {showInstructions && (
-        <div className="instructions-container">
-          <div className="instructions">
-            <h3 className="instructions-title">À propos de King's Board</h3>
+      {/* Section À propos dépliante */}
+      <div className="about-section">
+        <div 
+          className="about-header" 
+          onClick={() => setShowAboutSection(!showAboutSection)}
+        >
+          <h3>À propos de King's Board</h3>
+          <span className="about-toggle">
+            {showAboutSection ? '▼' : '▶'}
+          </span>
+        </div>
+        {showAboutSection && (
+          <div className="about-content">
             <p>King's Board est un outil pédagogique pour apprendre les zones d'influence aux échecs.</p>
             <p>Placez les pièces sur l'échiquier pour visualiser instantanément leur influence sur le plateau.</p>
             <p>Le code couleur indique :</p>
@@ -485,8 +518,8 @@ function App() {
             <p>Utilisez les boutons pour changer de vue (alliés/ennemis) et l'orientation du plateau.</p>
             <p>Idéal pour les débutants comme pour les joueurs expérimentés souhaitant approfondir leur compréhension stratégique.</p>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
