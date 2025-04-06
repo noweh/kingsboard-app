@@ -1,52 +1,54 @@
 # King's Board 👑
 
-Une application d'échecs interactive qui affiche les zones d'influence des pièces sur le plateau.
+An interactive chess application that displays the influence zones of pieces on the board.
 
-## Fonctionnalités
+## Features
 
-- Échiquier interactif avec glisser-déposer des pièces
-- Affichage des zones d'influence des pièces avec un code couleur
-- Possibilité d'inverser l'orientation du plateau
-- Possibilité de changer la vue (alliés ou ennemis)
-- Affichage des pièces capturées
+- Interactive chessboard with drag-and-drop functionality
+- Display of piece influence zones with color coding
+- Ability to flip the board orientation
+- Ability to switch between views (allies or enemies)
+- Available pieces section for placing pieces on the board
+- Visual indicators for controlled squares, defended pieces, and pieces in line of sight
+- Mobile-responsive design
 
-## Technologies utilisées
+## Technologies Used
 
 - React
 - TypeScript
-- chess.js pour la logique du jeu d'échecs
-- react-chessboard pour l'affichage de l'échiquier
-- Axios pour les appels API
+- chess.js for chess game logic
+- react-chessboard for chessboard display
+- Axios for API calls
 
 ## Installation
 
-1. Clonez ce dépôt
-2. Installez les dépendances :
+1. Clone this repository
+2. Install dependencies:
    ```
    npm install
    ```
-3. Lancez l'application :
+3. Start the application:
    ```
    npm start
    ```
 
 ## Configuration
 
-La base URL de l'API peut être modifiée dans le fichier `src/config.ts`.
+The API base URL can be modified in the `src/config.ts` file.
 
-## Structure du projet
+## Project Structure
 
-- `src/App.tsx` : Composant principal de l'application
-- `src/components/` : Composants réutilisables
-  - `InfluenceBoard.tsx` : Affichage des zones d'influence
-  - `CapturedPieces.tsx` : Affichage des pièces capturées
-- `src/services/` : Services pour les appels API
-  - `api.ts` : Fonctions pour communiquer avec l'API
-- `src/config.ts` : Configuration de l'application
+- `src/App.tsx`: Main application component
+- `src/components/`: Reusable components
+  - `InfluenceBoard.tsx`: Display of influence zones
+  - `CapturedPieces.tsx`: Display of available pieces
+- `src/services/`: Services for API calls
+  - `api.ts`: Functions to communicate with the API
+- `src/config.ts`: Application configuration
 
 ## API
 
-L'application communique avec une API locale pour récupérer les zones d'influence des pièces. L'API attend une requête POST à l'endpoint `/retrieve_colors` avec un corps de requête spécifique et renvoie un tableau 2D représentant les zones d'influence.
+The application communicates with a local API to retrieve the influence zones of pieces. The API expects a POST request to the `/retrieve_colors` endpoint with a specific request body and returns a 2D array representing the influence zones.
 
 # Getting Started with Create React App
 

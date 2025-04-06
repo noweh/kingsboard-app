@@ -7,10 +7,10 @@ import AvailablePieces from './components/CapturedPieces';
 import { retrieveColors } from './services/api';
 import { Piece as ApiPiece, ApiInfluenceCell } from './types';
 
-// Type pour les pièces dans react-chessboard
+// Type for pieces in react-chessboard
 type ChessPiece = string;
 
-// Fonction utilitaire pour convertir le type de pièce
+// Utility function to convert piece type
 const convertPieceType = (pieceType: string): PieceSymbol => {
   switch (pieceType) {
     case 'Pawn': return 'p';
@@ -21,11 +21,11 @@ const convertPieceType = (pieceType: string): PieceSymbol => {
     case 'King': return 'k';
     default:
       console.error('Unknown piece type:', pieceType);
-      return 'p'; // Valeur par défaut
+      return 'p'; // Default value
   }
 };
 
-// Fonction utilitaire pour convertir le type de pièce au format attendu par l'API
+// Utility function to convert piece type to API format
 const convertPieceTypeToApi = (type: string): string => {
   switch (type) {
     case 'p': return 'pawn';
@@ -55,15 +55,15 @@ function App() {
   const [showAboutSection, setShowAboutSection] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Fonction pour afficher un message d'erreur temporaire
+  // Function to display a temporary error message
   const showTemporaryError = (message: string) => {
     setErrorMessage(message);
     setTimeout(() => {
       setErrorMessage(null);
-    }, 3000); // Le message disparaît après 3 secondes
+    }, 3000); // Message disappears after 3 seconds
   };
 
-  // Fonction pour mettre à jour la taille du plateau en fonction de la largeur de l'écran
+  // Function to update board size based on screen width
   useEffect(() => {
     const updateBoardSize = () => {
       const width = window.innerWidth;
@@ -76,36 +76,36 @@ function App() {
       }
     };
 
-    // Mettre à jour la taille initiale
+    // Update initial size
     updateBoardSize();
 
-    // Ajouter un écouteur d'événements pour redimensionner
+    // Add event listener for resizing
     window.addEventListener('resize', updateBoardSize);
 
-    // Nettoyer l'écouteur d'événements
+    // Clean up event listener
     return () => {
       window.removeEventListener('resize', updateBoardSize);
     };
   }, []);
 
-  // Fonction pour obtenir les pièces à partir du FEN
+  // Function to get pieces from FEN
   const getPiecesFromFen = (fen: string, currentView: 'allies' | 'enemies'): ApiPiece[] => {
     const pieces: ApiPiece[] = [];
     const board = game.board();
     
-    // Parcourir le plateau dans l'ordre attendu par l'API
+    // Iterate through the board in the order expected by the API
     for (let col = 0; col < 8; col++) {
       for (let row = 0; row < 8; row++) {
         const piece = board[row][col];
         if (piece) {
-          // Déterminer l'équipe en fonction de la couleur de la pièce
-          // Les pièces blanches sont toujours "allies", les noires sont toujours "enemies"
+          // Determine team based on piece color
+          // White pieces are always "allies", black pieces are always "enemies"
           const team = piece.color === 'w' ? 'allies' : 'enemies';
           
-          // Ajouter toutes les pièces, pas seulement celles de la vue actuelle
+          // Add all pieces, not just those in the current view
           pieces.push({
             x: col,
-            y: 7 - row, // Inverser la ligne pour correspondre à la notation d'échecs (1-8)
+            y: 7 - row, // Reverse the row to match chess notation (1-8)
             type: convertPieceTypeToApi(piece.type),
             team
           });
@@ -116,7 +116,7 @@ function App() {
     return pieces;
   };
 
-  // Mettre à jour le plateau d'influence
+  // Update the influence board
   const updateInfluenceBoard = async () => {
     try {
       const fen = game.fen();
@@ -130,7 +130,7 @@ function App() {
       });
       
       if (response?.data?.board && Array.isArray(response.data.board) && response.data.board.length === 8) {
-        // Créer une copie profonde du tableau pour éviter les problèmes de référence
+        // Create a deep copy of the array to avoid reference issues
         const boardCopy = JSON.parse(JSON.stringify(response.data.board));
         setInfluenceBoard(boardCopy);
       } else {
@@ -145,67 +145,67 @@ function App() {
     }
   };
 
-  // Mettre à jour le plateau d'influence quand le jeu, la vue ou l'orientation du plateau change
+  // Update the influence board when the game, view, or board orientation changes
   useEffect(() => {
     const timer = setTimeout(updateInfluenceBoard, 100);
     return () => clearTimeout(timer);
   }, [game, view, boardOrientation]);
 
-  // Gérer le mouvement des pièces
+  // Handle piece movement
   const onDrop = (sourceSquare: Square, targetSquare: Square) => {
-    // Si la pièce est glissée depuis une besace
+    // If the piece is dragged from a bag
     if (draggedPiece) {
       const gameCopy = new Chess(game.fen());
       
-      // Vérifier si la case cible est valide
+      // Check if the target square is valid
       if (gameCopy.get(targetSquare)) {
-        return false; // La case est occupée
+        return false; // Square is occupied
       }
       
-      // Ajouter la pièce à la position cible
+      // Add the piece to the target position
       gameCopy.put({ type: draggedPiece.type, color: draggedPiece.team }, targetSquare);
       
-      // Mettre à jour le jeu
+      // Update the game
       setGame(gameCopy);
       setDraggedPiece(null);
       return true;
     }
     
-    // Si la pièce est glissée depuis le plateau
+    // If the piece is dragged from the board
     try {
-      // Vérifier si la source et la cible sont valides
+      // Check if source and target are valid
       if (!sourceSquare || !targetSquare) {
         return false;
       }
       
-      // Vérifier si la pièce existe à la source
+      // Check if the piece exists at the source
       const piece = game.get(sourceSquare);
       if (!piece) {
         return false;
       }
       
-      // Vérifier si la cible est occupée par une pièce de la même couleur
+      // Check if the target is occupied by a piece of the same color
       const targetPiece = game.get(targetSquare);
       if (targetPiece && targetPiece.color === piece.color) {
         return false;
       }
       
-      // Vérifier si la pièce cible est un roi
+      // Check if the target piece is a king
       if (targetPiece && targetPiece.type === 'k') {
-        showTemporaryError('Le roi ne peut pas être capturé');
+        showTemporaryError('The king cannot be captured');
         return false;
       }
       
-      // Utiliser une approche personnalisée pour les mouvements
+      // Use a custom approach for movements
       const gameCopy = new Chess(game.fen());
       
-      // Supprimer la pièce de la source
+      // Remove the piece from the source
       gameCopy.remove(sourceSquare);
       
-      // Ajouter la pièce à la cible
+      // Add the piece to the target
       gameCopy.put(piece, targetSquare);
       
-      // Mettre à jour le jeu avec le nouveau FEN
+      // Update the game with the new FEN
       setGame(gameCopy);
       return true;
     } catch (error) {
@@ -214,52 +214,52 @@ function App() {
     }
   };
 
-  // Gérer le début du drag
+  // Handle drag start
   const onPieceDragBegin = (piece: ChessPiece, sourceSquare: Square) => {
-    // Réinitialiser la pièce glissée si elle vient du plateau
+    // Reset dragged piece if it comes from the board
     setDraggedPiece(null);
   };
 
-  // Gérer la fin du drag
+  // Handle drag end
   const onPieceDragEnd = (piece: ChessPiece, sourceSquare: Square) => {
-    // Ne rien faire ici, laisser le gestionnaire global gérer la suppression
-    // des pièces glissées hors du plateau
+    // Do nothing here, let the global handler manage the removal
+    // of pieces dragged off the board
   };
 
-  // Gérer le clic sur une case
+  // Handle square click
   const onSquareClick = (square: Square) => {
-    // Si une pièce est sélectionnée dans la besace, la placer sur la case cliquée
+    // If a piece is selected in the bag, place it on the clicked square
     if (selectedPiece) {
       const gameCopy = new Chess(game.fen());
       
-      // Vérifier si la case cible est valide
+      // Check if the target square is valid
       if (gameCopy.get(square)) {
-        showTemporaryError('Cette case est déjà occupée');
+        showTemporaryError('This square is already occupied');
         return;
       }
       
-      // Convertir le type de pièce au format attendu par chess.js
+      // Convert piece type to chess.js format
       const chessPieceType = convertPieceType(selectedPiece.type);
       
-      // Ajouter la pièce à la position cible
+      // Add the piece to the target position
       gameCopy.put({ type: chessPieceType, color: selectedPiece.team }, square);
       
-      // Mettre à jour le jeu
+      // Update the game
       setGame(gameCopy);
-      setSelectedPiece(null); // Réinitialiser la pièce sélectionnée après l'avoir placée
+      setSelectedPiece(null); // Reset selected piece after placing it
       
-      // Réinitialiser la sélection visuelle dans le composant AvailablePieces
+      // Reset visual selection in AvailablePieces component
       setResetPieceSelection(true);
       setTimeout(() => setResetPieceSelection(false), 100);
       
       return;
     }
     
-    // Sinon, sélectionner la case pour un déplacement ultérieur
+    // Otherwise, select the square for later movement
     setSelectedSquare(square);
   };
 
-  // Gérer les touches du clavier
+  // Handle keyboard keys
   const onKeyDown = (event: KeyboardEvent) => {
     if (!selectedSquare) return;
 
@@ -290,7 +290,7 @@ function App() {
     setSelectedSquare(newSquare);
   };
 
-  // Ajouter l'écouteur d'événements pour les touches
+  // Add event listener for keys
   useEffect(() => {
     window.addEventListener('keydown', onKeyDown);
     return () => {
@@ -298,22 +298,22 @@ function App() {
     };
   }, [selectedSquare]);
 
-  // Ajouter l'écouteur d'événements pour détecter les pièces glissées hors du plateau
+  // Add event listener to detect pieces dragged off the board
   useEffect(() => {
     const handleGlobalDragEnd = (e: DragEvent) => {
-      // Vérifier si une pièce est en cours de glissement depuis le plateau
+      // Check if a piece is being dragged from the board
       if (draggedSourceSquare) {
-        // Vérifier si la pièce a été déposée sur une zone valide du plateau
+        // Check if the piece was dropped on a valid area of the board
         const targetElement = document.elementFromPoint(e.clientX, e.clientY);
         const isOnBoard = targetElement?.closest('.board-container') !== null;
         
-        // Ne supprimer la pièce que si elle n'a pas été déposée sur le plateau
+        // Only remove the piece if it wasn't dropped on the board
         if (!isOnBoard) {
-          // Vérifier si la pièce est un roi
+          // Check if the piece is a king
           const piece = game.get(draggedSourceSquare);
           if (piece && piece.type === 'k') {
-            // Ne pas supprimer le roi, afficher un message d'erreur
-            showTemporaryError('Le roi ne peut pas être retiré du plateau');
+            // Don't remove the king, display an error message
+            showTemporaryError('The king cannot be removed from the board');
             return;
           }
           
@@ -322,7 +322,7 @@ function App() {
           setGame(gameCopy);
         }
         
-        // Réinitialiser la variable d'état
+        // Reset state variable
         setDraggedSourceSquare(null);
       }
     };
@@ -333,26 +333,26 @@ function App() {
     };
   }, [draggedSourceSquare]);
 
-  // Gérer le début du glissement d'une pièce depuis le sac
+  // Handle the start of dragging a piece from the bag
   const handlePieceDragStart = (pieceType: string, team: 'w' | 'b') => {
-    // Convertir le type de pièce au format attendu par chess.js
+    // Convert piece type to chess.js format
     const chessPieceType = convertPieceType(pieceType);
     setDraggedPiece({ type: chessPieceType, team });
   };
 
-  // Gérer le survol d'une pièce glissée sur le plateau
+  // Handle dragging a piece over the board
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault(); // Nécessaire pour permettre le dépôt
+    e.preventDefault(); // Necessary to allow dropping
   };
 
-  // Gérer le dépôt d'une pièce sur le plateau
+  // Handle dropping a piece on the board
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     
-    // Récupérer les données de la pièce glissée
+    // Get the dragged piece data
     const data = e.dataTransfer.getData('text/plain');
     
-    // Vérifier si les données sont vides
+    // Check if data is empty
     if (!data) {
       return;
     }
@@ -365,79 +365,79 @@ function App() {
       return;
     }
     
-    // Vérifier si la pièce provient du plateau (sourceSquare est défini)
-    // Si c'est le cas, laisser le composant Chessboard gérer le déplacement
+    // Check if the piece comes from the board (sourceSquare is defined)
+    // If so, let the Chessboard component handle the movement
     if (pieceData.sourceSquare) {
       return;
     }
     
-    // Calculer la position de la case cible
+    // Calculate the target square position
     const boardRect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - boardRect.left;
     const y = e.clientY - boardRect.top;
     
-    // Convertir les coordonnées en notation d'échecs (a1, b2, etc.)
-    // Prendre en compte l'orientation du plateau
+    // Convert coordinates to chess notation (a1, b2, etc.)
+    // Take into account board orientation
     let file;
     let rank;
     
     if (boardOrientation === 'white') {
-      // Orientation normale (blancs en bas)
+      // Normal orientation (whites at bottom)
       file = Math.floor(x / (boardRect.width / 8));
       rank = 7 - Math.floor(y / (boardRect.height / 8));
     } else {
-      // Plateau inversé (noirs en bas)
-      file = 7 - Math.floor(x / (boardRect.width / 8)); // Inverser la colonne
+      // Inverted board (blacks at bottom)
+      file = 7 - Math.floor(x / (boardRect.width / 8)); // Invert column
       rank = Math.floor(y / (boardRect.height / 8));
     }
     
     const targetSquare = `${String.fromCharCode(97 + file)}${rank + 1}` as Square;
     
-    // Vérifier si c'est un pion et s'il est placé sur une rangée valide
+    // Check if it's a pawn and if it's placed on a valid rank
     const isPawn = pieceData.type === 'Pawn';
     const isFirstRank = rank === 0;
     const isLastRank = rank === 7;
     
-    // Empêcher le placement de pions sur la première ou la dernière rangée
+    // Prevent placing pawns on the first or last rank
     if (isPawn && (isFirstRank || isLastRank)) {
-      showTemporaryError('Les pions ne peuvent pas être placés sur la première ou la dernière rangée');
+      showTemporaryError('Pawns cannot be placed on the first or last rank');
       return;
     }
     
-    // Ajouter la pièce au plateau
+    // Add the piece to the board
     const gameCopy = new Chess(game.fen());
     
-    // Vérifier si la case cible est valide
+    // Check if the target square is valid
     if (gameCopy.get(targetSquare)) {
-      showTemporaryError('Cette case est déjà occupée');
+      showTemporaryError('This square is already occupied');
       return;
     }
     
-    // Convertir le type de pièce au format attendu par chess.js
+    // Convert piece type to chess.js format
     const chessPieceType = convertPieceType(pieceData.type);
     
-    // Ajouter la pièce à la position cible
+    // Add the piece to the target position
     gameCopy.put({ type: chessPieceType, color: pieceData.team }, targetSquare);
     
-    // Mettre à jour le jeu
+    // Update the game
     setGame(gameCopy);
     
-    // Réinitialiser la sélection visuelle dans le composant AvailablePieces
+    // Reset visual selection in AvailablePieces component
     setResetPieceSelection(true);
     setTimeout(() => setResetPieceSelection(false), 100);
   };
 
-  // Basculer entre les vues (alliés/ennemis)
+  // Toggle between views (allies/enemies)
   const toggleView = () => {
     setView(view === 'allies' ? 'enemies' : 'allies');
   };
 
-  // Basculer l'orientation du plateau
+  // Toggle board orientation
   const toggleBoardOrientation = () => {
     setBoardOrientation(boardOrientation === 'white' ? 'black' : 'white');
   };
 
-  // Gérer le clic sur une pièce dans la besace
+  // Handle piece click in the bag
   const handlePieceClick = (pieceType: string, team: 'w' | 'b') => {
     setSelectedPiece({ type: pieceType, team });
   };
@@ -473,19 +473,19 @@ function App() {
             <h3 className="legend-title">Légende</h3>
             <div className="legend-item">
               <div className="legend-color yellow"></div>
-              <div className="legend-text">Cases contrôlées par vos pièces</div>
+              <div className="legend-text">Cases contrôlées par les pièces du camp sélectionné</div>
             </div>
             <div className="legend-item">
               <div className="legend-color green"></div>
-              <div className="legend-text">Pièces alliées défendues</div>
+              <div className="legend-text">Pièces du camp sélectionné défendues</div>
             </div>
             <div className="legend-item">
               <div className="legend-color red"></div>
-              <div className="legend-text">Pièces ennemies en ligne de vue</div>
+              <div className="legend-text">Pièces adverses en ligne de vue</div>
             </div>
             <div className="legend-item">
               <div className="legend-color x-count">X</div>
-              <div className="legend-text">Nombre de pièces ciblant une case</div>
+              <div className="legend-text">Nombre de pièces du camp sélectionné ciblant une case</div>
             </div>
           </div>
         </div>
@@ -501,21 +501,21 @@ function App() {
               position={game.fen()}
               onPieceDrop={onDrop}
               onPieceDragBegin={(piece, sourceSquare) => {
-                // Stocker les informations de la pièce glissée
+                // Store the dragged piece information
                 const pieceData = {
                   sourceSquare,
                   type: piece.charAt(1),
                   team: piece.charAt(0) as 'w' | 'b'
                 };
                 
-                // Stocker les données dans l'événement de glissement
+                // Store data in the drag event
                 const dragEvent = new DragEvent('dragstart');
                 dragEvent.dataTransfer?.setData('text/plain', JSON.stringify(pieceData));
                 
-                // Stocker les informations dans les variables d'état
+                // Store information in state variables
                 setDraggedSourceSquare(sourceSquare);
                 
-                // Appeler le gestionnaire d'événements original
+                // Call the original event handler
                 onPieceDragBegin(piece, sourceSquare);
               }}
               onPieceDragEnd={onPieceDragEnd}
@@ -568,9 +568,9 @@ function App() {
             <p>Placez les pièces sur l'échiquier pour visualiser instantanément leur influence sur le plateau.</p>
             <p>Le code couleur indique :</p>
             <ul className="instructions-list">
-              <li>Jaune : Cases contrôlées par vos pièces</li>
-              <li>Vert : Pièces alliées défendues</li>
-              <li>Rouge : Pièces ennemies en ligne de vue</li>
+              <li>Jaune : Cases contrôlées par les pièces du camp sélectionné</li>
+              <li>Vert : Pièces du camp sélectionné défendues</li>
+              <li>Rouge : Pièces adverses en ligne de vue</li>
             </ul>
             <p>Utilisez les boutons pour changer de vue (alliés/ennemis) et l'orientation du plateau.</p>
             <p>Idéal pour les débutants comme pour les joueurs expérimentés souhaitant approfondir leur compréhension stratégique.</p>
