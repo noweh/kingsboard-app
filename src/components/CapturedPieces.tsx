@@ -1,12 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PieceSymbol } from 'chess.js';
 
 interface Props {
   onPieceDragStart: (pieceType: string, team: 'w' | 'b') => void;
+  onPieceClick?: (pieceType: string, team: 'w' | 'b') => void;
+  resetSelection?: boolean;
 }
 
-const AvailablePieces: React.FC<Props> = ({ onPieceDragStart }) => {
+const AvailablePieces: React.FC<Props> = ({ onPieceDragStart, onPieceClick, resetSelection }) => {
   const [activeTeam, setActiveTeam] = useState<'w' | 'b'>('w');
+  const [selectedPiece, setSelectedPiece] = useState<string | null>(null);
+
+  // Réinitialiser la sélection lorsque resetSelection change
+  useEffect(() => {
+    if (resetSelection) {
+      setSelectedPiece(null);
+    }
+  }, [resetSelection]);
 
   const pieces = [
     { type: 'Pawn', symbol: activeTeam === 'w' ? '♙' : '♟' },
@@ -22,9 +32,24 @@ const AvailablePieces: React.FC<Props> = ({ onPieceDragStart }) => {
     onPieceDragStart(pieceType, activeTeam);
   };
 
+  const handlePieceClick = (pieceType: string) => {
+    // Si on clique sur la même pièce, on désélectionne
+    if (selectedPiece === pieceType) {
+      setSelectedPiece(null);
+    } else {
+      // Sinon, on sélectionne la nouvelle pièce (et on désélectionne l'ancienne)
+      setSelectedPiece(pieceType);
+    }
+    
+    if (onPieceClick) {
+      onPieceClick(pieceType, activeTeam);
+    }
+  };
+
   const handleTeamChange = (team: 'w' | 'b') => {
     console.log('Changing team to:', team);
     setActiveTeam(team);
+    setSelectedPiece(null); // Réinitialiser la pièce sélectionnée lors du changement d'équipe
   };
 
   return (
@@ -51,9 +76,10 @@ const AvailablePieces: React.FC<Props> = ({ onPieceDragStart }) => {
         {pieces.map(piece => (
           <div
             key={piece.type}
-            className="piece"
+            className={`piece ${selectedPiece === piece.type ? 'selected' : ''}`}
             draggable
             onDragStart={(e) => handleDragStart(e, piece.type)}
+            onClick={() => handlePieceClick(piece.type)}
           >
             <span className="piece-symbol">{piece.symbol}</span>
           </div>

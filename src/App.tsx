@@ -43,6 +43,8 @@ function App() {
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
   const [draggedPiece, setDraggedPiece] = useState<{ type: PieceSymbol, team: 'w' | 'b' } | null>(null);
   const [draggedSourceSquare, setDraggedSourceSquare] = useState<Square | null>(null);
+  const [selectedPiece, setSelectedPiece] = useState<{ type: string, team: 'w' | 'b' } | null>(null);
+  const [resetPieceSelection, setResetPieceSelection] = useState<boolean>(false);
   const [influenceBoard, setInfluenceBoard] = useState<(ApiInfluenceCell | null)[][]>(
     Array(8).fill(null).map(() => Array(8).fill(null))
   );
@@ -220,6 +222,34 @@ function App() {
 
   // Gérer le clic sur une case
   const onSquareClick = (square: Square) => {
+    // Si une pièce est sélectionnée dans la besace, la placer sur la case cliquée
+    if (selectedPiece) {
+      const gameCopy = new Chess(game.fen());
+      
+      // Vérifier si la case cible est valide
+      if (gameCopy.get(square)) {
+        showTemporaryError('Cette case est déjà occupée');
+        return;
+      }
+      
+      // Convertir le type de pièce au format attendu par chess.js
+      const chessPieceType = convertPieceType(selectedPiece.type);
+      
+      // Ajouter la pièce à la position cible
+      gameCopy.put({ type: chessPieceType, color: selectedPiece.team }, square);
+      
+      // Mettre à jour le jeu
+      setGame(gameCopy);
+      setSelectedPiece(null); // Réinitialiser la pièce sélectionnée après l'avoir placée
+      
+      // Réinitialiser la sélection visuelle dans le composant AvailablePieces
+      setResetPieceSelection(true);
+      setTimeout(() => setResetPieceSelection(false), 100);
+      
+      return;
+    }
+    
+    // Sinon, sélectionner la case pour un déplacement ultérieur
     setSelectedSquare(square);
   };
 
@@ -377,6 +407,10 @@ function App() {
     
     // Mettre à jour le jeu
     setGame(gameCopy);
+    
+    // Réinitialiser la sélection visuelle dans le composant AvailablePieces
+    setResetPieceSelection(true);
+    setTimeout(() => setResetPieceSelection(false), 100);
   };
 
   // Basculer entre les vues (alliés/ennemis)
@@ -387,6 +421,11 @@ function App() {
   // Basculer l'orientation du plateau
   const toggleBoardOrientation = () => {
     setBoardOrientation(boardOrientation === 'white' ? 'black' : 'white');
+  };
+
+  // Gérer le clic sur une pièce dans la besace
+  const handlePieceClick = (pieceType: string, team: 'w' | 'b') => {
+    setSelectedPiece({ type: pieceType, team });
   };
 
   return (
@@ -409,6 +448,8 @@ function App() {
             <div className="pieces-bags">
               <AvailablePieces 
                 onPieceDragStart={handlePieceDragStart} 
+                onPieceClick={handlePieceClick}
+                resetSelection={resetPieceSelection}
               />
             </div>
           </div>
