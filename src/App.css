@@ -527,7 +527,59 @@ button:active {
   
   .available-pieces {
     width: 100%;
-    min-height: 160px;
+    min-height: 120px;
+    padding: 8px;
+  }
+
+  .pieces-section-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .pieces-section {
+    width: 250px;
+    max-width: 250px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .legend-container {
+    width: 250px;
+    max-width: 250px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .pieces-grid {
+    gap: 6px;
+    min-height: 100px;
+  }
+
+  .piece {
+    padding: 4px;
+    width: 35px;
+    height: 35px;
+    min-height: unset;
+    max-width: unset;
+    margin: 0 auto;
+    aspect-ratio: 1;
+  }
+
+  .piece-symbol {
+    font-size: 20px;
+  }
+
+  .piece-name {
+    font-size: 10px;
   }
 }
 
@@ -595,6 +647,26 @@ button:active {
   .pieces-section {
     max-width: 200px;
   }
+
+  .pieces-section-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .pieces-section {
+    width: 50%;
+    max-width: 50%;
+  }
+
+  .legend-container {
+    width: 50%;
+    max-width: 50%;
+  }
 }
 
 @media (max-width: 480px) {
@@ -624,17 +696,18 @@ button:active {
 
   .pieces-section-wrapper {
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    gap: 8px;
+    gap: 5px;
     margin-bottom: 8px;
     order: 1;
   }
 
   .pieces-section {
-    width: 52%;
-    max-width: 52%;
+    width: 38%;
+    max-width: 38%;
     margin: 0;
     padding-bottom: 0;
     min-height: 0;
@@ -658,46 +731,57 @@ button:active {
 
   .available-pieces {
     min-height: unset;
-    padding: 6px;
+    padding: 1px;
     height: auto;
     overflow: visible;
+    width: 100%;
   }
 
   .pieces-grid {
-    gap: 3px;
+    gap: 0px;
     min-height: 0;
     height: auto;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
   }
 
   .piece {
-    padding: 2px;
-    min-height: 22px;
-    max-width: 45px;
-    margin: 0 auto;
+    padding: 0px;
+    min-height: 14px;
+    max-width: none;
+    margin: 0;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
   }
 
   .piece-symbol {
-    font-size: 13px;
+    font-size: 20px;
+  }
+
+  .piece-name {
+    font-size: 9px;
+    display: none;
   }
 
   .legend-container {
-    width: 46%;
-    max-width: 46%;
+    width: 60%;
+    max-width: 60%;
     margin: 0;
-    padding: 2px;
+    padding: 4px;
     display: flex;
     flex-direction: column;
     align-items: center;
   }
 
   .legend-title {
-    font-size: 0.7em;
-    margin-bottom: 1px;
+    font-size: 0.8em;
+    margin-bottom: 2px;
   }
 
   .legend-item {
-    margin-bottom: 1px;
-    gap: 1px;
+    margin-bottom: 2px;
+    gap: 2px;
     display: flex;
     align-items: center;
     width: 100%;
@@ -710,10 +794,10 @@ button:active {
   }
 
   .legend-text {
-    font-size: 12px;
+    font-size: 10px;
     color: #666;
     flex: 1;
-    line-height: 1.4;
+    line-height: 1.2;
   }
 
   .controls {
@@ -764,9 +848,9 @@ button:active {
   }
 
   .available-pieces h3 {
-    font-size: 9px;
+    font-size: 10px;
     margin-bottom: 2px;
-    height: 14px;
+    height: 12px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
