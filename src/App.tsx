@@ -475,15 +475,15 @@ function App() {
           <div className="legend-container">
             <h3 className="legend-title">Légende</h3>
             <div className="legend-item">
-              <div className="legend-color" style={{ backgroundColor: 'rgba(255, 255, 0, 0.3)' }}></div>
+              <div className="legend-color yellow"></div>
               <div className="legend-text">Cases contrôlées par vos pièces</div>
             </div>
             <div className="legend-item">
-              <div className="legend-color" style={{ backgroundColor: 'rgba(0, 255, 0, 0.3)' }}></div>
+              <div className="legend-color green"></div>
               <div className="legend-text">Pièces alliées défendues</div>
             </div>
             <div className="legend-item">
-              <div className="legend-color" style={{ backgroundColor: 'rgba(255, 0, 0, 0.3)' }}></div>
+              <div className="legend-color red"></div>
               <div className="legend-text">Pièces ennemies en ligne de vue</div>
             </div>
             <div className="legend-item">

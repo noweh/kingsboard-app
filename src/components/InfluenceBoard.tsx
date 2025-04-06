@@ -38,12 +38,6 @@ const InfluenceBoard: React.FC<InfluenceBoardProps> = ({ board, boardOrientation
     );
   }
 
-  // Fonction pour calculer l'intensité de la couleur
-  const getColorIntensity = (cell: ApiInfluenceCell | null) => {
-    if (!cell) return 0;
-    return Math.min(cell.quantity / 2, 5); // Limite l'intensité à 5
-  };
-
   // Fonction pour obtenir la couleur dominante
   const getDominantColor = (cell: ApiInfluenceCell | null) => {
     if (!cell) return 'transparent';
@@ -53,7 +47,7 @@ const InfluenceBoard: React.FC<InfluenceBoardProps> = ({ board, boardOrientation
   // Fonction pour obtenir le texte à afficher dans la cellule
   const getCellText = (cell: ApiInfluenceCell | null) => {
     if (!cell) return '';
-    return `${cell.color.charAt(0).toUpperCase()}:${cell.quantity}`;
+    return `${cell.quantity}`;
   };
 
   // Créer un tableau de cellules dans l'ordre correct pour l'affichage
@@ -67,19 +61,16 @@ const InfluenceBoard: React.FC<InfluenceBoardProps> = ({ board, boardOrientation
       }
       
       const cell = board[i][j];
-      const intensity = getColorIntensity(cell);
       const dominantColor = getDominantColor(cell);
       const cellText = getCellText(cell);
       
       let backgroundColor = 'transparent';
       if (dominantColor === 'green') {
-        backgroundColor = `rgba(0, 255, 0, ${intensity * 0.3})`;
+        backgroundColor = '#2ecc71'; // Vert plus vif
       } else if (dominantColor === 'yellow') {
-        backgroundColor = `rgba(255, 255, 0, ${intensity * 0.3})`;
+        backgroundColor = '#f1c40f'; // Jaune plus vif
       } else if (dominantColor === 'red') {
-        backgroundColor = `rgba(255, 0, 0, ${intensity * 0.3})`;
-      } else if (dominantColor === 'blue') {
-        backgroundColor = `rgba(0, 0, 255, ${intensity * 0.3})`;
+        backgroundColor = '#e74c3c'; // Rouge plus vif
       }
       
       // Calculer la position en fonction de l'orientation du plateau
@@ -100,11 +91,30 @@ const InfluenceBoard: React.FC<InfluenceBoardProps> = ({ board, boardOrientation
           left,
           width: '12.5%',
           height: '12.5%',
-          backgroundColor,
+          backgroundColor: 'transparent',
           border: 'none',
           pointerEvents: 'none' as const,
         },
-        cellText
+        indicatorStyle: {
+          position: 'absolute' as const,
+          top: '5%',
+          right: '5%',
+          width: '25%',
+          height: '25%',
+          backgroundColor,
+          border: '1px solid #ddd',
+          borderRadius: '2px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          pointerEvents: 'none' as const,
+          color: '#ffffff',
+          fontWeight: 'bold',
+          fontSize: '12px',
+          textShadow: '0px 0px 2px rgba(0,0,0,0.5)',
+        },
+        cellText,
+        hasInfluence: !!cell
       });
     }
   }
@@ -117,7 +127,11 @@ const InfluenceBoard: React.FC<InfluenceBoardProps> = ({ board, boardOrientation
           className="influence-cell"
           style={cell.style}
         >
-          {cell.cellText && <span className="cell-text">{cell.cellText}</span>}
+          {cell.hasInfluence && (
+            <div style={cell.indicatorStyle}>
+              {cell.cellText}
+            </div>
+          )}
         </div>
       ))}
     </div>
