@@ -8,7 +8,7 @@ import { retrieveColors } from './services/api';
 import { Piece as ApiPiece, ApiInfluenceCell, Origin } from './types';
 
 // Type for pieces in react-chessboard
-type ChessPiece = string;
+// Supprimé: type ChessPiece = string;
 
 // Utility function to convert piece type
 const convertPieceType = (pieceType: string): PieceSymbol => {
@@ -141,12 +141,6 @@ function App() {
     }
   };
 
-  // Update the influence board when the game, view, or board orientation changes
-  useEffect(() => {
-    const timer = setTimeout(updateInfluenceBoard, 100);
-    return () => clearTimeout(timer);
-  }, [game, view, boardOrientation]);
-
   // Effect to fetch influence data when game or view changes
   useEffect(() => {
     updateInfluenceBoard();
@@ -228,13 +222,13 @@ function App() {
   };
 
   // Handle drag start
-  const onPieceDragBegin = (piece: ChessPiece, sourceSquare: Square) => {
+  const onPieceDragBegin = (piece: string, sourceSquare: Square) => {
     // Reset dragged piece if it comes from the board
     setDraggedPiece(null);
   };
 
   // Handle drag end
-  const onPieceDragEnd = (piece: ChessPiece, sourceSquare: Square) => {
+  const onPieceDragEnd = (piece: string, sourceSquare: Square) => {
     // Do nothing here, let the global handler manage the removal
     // of pieces dragged off the board
   };
