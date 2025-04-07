@@ -142,8 +142,8 @@ const InfluenceBoard: React.FC<InfluenceBoardProps> = ({
         },
         indicatorStyle: {
           position: 'absolute' as const,
-          bottom: '5%',
-          left: '5%',
+          top: '5%',
+          right: '5%',
           width: '25%',
           height: '25%',
           backgroundColor,

@@ -222,6 +222,26 @@ function App() {
     // of pieces dragged off the board
   };
 
+  // Function to highlight squares influenced by a piece at a given square
+  const highlightInfluencedSquares = (square: Square) => {
+    const pieceX = square.charCodeAt(0) - 97; // 'a' -> 0
+    const pieceY = parseInt(square.charAt(1)) - 1; // '1' -> 0
+
+    const influencedSquaresToHighlight: Origin[] = [];
+    for (let i = 0; i < 8; i++) { // i = row index in influenceBoard (0 = rank 1)
+      for (let j = 0; j < 8; j++) { // j = col index in influenceBoard (0 = col 'a')
+        const cell = influenceBoard[i][j];
+        if (cell?.origins) {
+          const pieceIsOrigin = cell.origins.some(origin => origin.x === pieceX && origin.y === pieceY);
+          if (pieceIsOrigin) {
+            influencedSquaresToHighlight.push({ x: j, y: i });
+          }
+        }
+      }
+    }
+    setHighlightedOrigins(influencedSquaresToHighlight);
+  };
+
   // Handle square click
   const onSquareClick = (square: Square) => {
     // If a piece is selected in the bag, place it on the clicked square
@@ -270,7 +290,17 @@ function App() {
         return;
       }
       
-      // Try to move the piece
+      // *** NEW LOGIC TO CHECK FOR CLICKING ANOTHER ALLY ***
+      const targetPiece = gameCopy.get(square);
+      if (targetPiece && targetPiece.color === sourcePiece.color) {
+        // Clicked on another friendly piece - just switch selection
+        setSelectedBoardPiece(square);
+        highlightInfluencedSquares(square); // Highlight new piece's influence
+        return;
+      }
+      // *** END NEW LOGIC ***
+      
+      // Try to move the piece (to empty square or capture enemy)
       const moveResult = onDrop(selectedBoardPiece, square);
       
       // If the move was successful, deselect the piece and clear highlighted origins
@@ -278,35 +308,16 @@ function App() {
         setSelectedBoardPiece(null);
         setHighlightedOrigins(null); // Clear highlights
       }
+      // If move failed (invalid move), selection remains, highlights remain.
       
       return;
     }
     
-    // If clicking on a square with a piece, select it and highlight the squares it influences
+    // If clicking on a square with a piece (and nothing was selected before)
     const piece = game.get(square);
     if (piece) {
       setSelectedBoardPiece(square); // Select the piece
-
-      const pieceX = square.charCodeAt(0) - 97; // 'a' -> 0
-      const pieceY = parseInt(square.charAt(1)) - 1; // '1' -> 0
-
-      const influencedSquaresToHighlight: Origin[] = [];
-      for (let i = 0; i < 8; i++) { // i = row index in influenceBoard (0 = rank 1)
-        for (let j = 0; j < 8; j++) { // j = col index in influenceBoard (0 = col 'a')
-          const cell = influenceBoard[i][j];
-          if (cell?.origins) {
-            // Check if the clicked piece is one of the origins for this cell's influence
-            const pieceIsOrigin = cell.origins.some(origin => origin.x === pieceX && origin.y === pieceY);
-            if (pieceIsOrigin) {
-              // This cell (i, j) is influenced by the clicked piece. Highlight it.
-              influencedSquaresToHighlight.push({ x: j, y: i }); // Store cell coords (col, row) based on board structure
-            }
-          }
-        }
-      }
-      // The state `highlightedOrigins` will store the coordinates of the influenced squares
-      setHighlightedOrigins(influencedSquaresToHighlight);
-
+      highlightInfluencedSquares(square); // Highlight its influence
     } else {
       // Otherwise, select the square for later movement (if needed) and clear highlights
       setSelectedSquare(square);
