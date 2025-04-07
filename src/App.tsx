@@ -509,7 +509,7 @@ function App() {
     <div className="app">
       <h1 className="app-title">
         <span className="crown-icon">👑</span>
-        Kings Board
+        King's Board
       </h1>
       <p className="app-subtitle">Apprentissage des zones d'influence</p>
       
