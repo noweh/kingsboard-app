@@ -147,6 +147,23 @@ function App() {
     return () => clearTimeout(timer);
   }, [game, view, boardOrientation]);
 
+  // Effect to fetch influence data when game or view changes
+  useEffect(() => {
+    updateInfluenceBoard();
+  }, [game, view]);
+
+  // *** NEW EFFECT ***
+  // Effect to re-highlight influenced squares if the selected piece
+  // or the influence data itself changes.
+  useEffect(() => {
+    if (selectedBoardPiece) {
+      highlightInfluencedSquares(selectedBoardPiece);
+    }
+    // Dependencies: Re-run when the selected piece changes OR when the influence board data changes.
+    // highlightInfluencedSquares is stable as it's defined outside render or doesn't depend on changing state/props other than influenceBoard.
+  }, [influenceBoard, selectedBoardPiece]); 
+  // *** END NEW EFFECT ***
+
   // Handle piece movement
   const onDrop = (sourceSquare: Square, targetSquare: Square) => {
     // If the piece is dragged from a bag
