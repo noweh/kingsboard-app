@@ -16,9 +16,15 @@ export interface Piece {
 }
 
 // Types pour les réponses de l'API
+export interface Origin {
+  x: number;
+  y: number;
+}
+
 export interface ApiInfluenceCell {
-  color: string;
+  color: 'green' | 'yellow' | 'red';
   quantity: number;
+  origins?: Origin[];
 }
 
 export interface ApiResponse {

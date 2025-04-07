@@ -1,12 +1,23 @@
-import React from 'react';
-import { ApiInfluenceCell } from '../types';
+import React, { useState } from 'react';
+import { ApiInfluenceCell, Origin } from '../types';
 
 interface InfluenceBoardProps {
   board: (ApiInfluenceCell | null)[][];
   boardOrientation?: 'white' | 'black';
+  onOriginHighlight?: (origins: Origin[] | null) => void;
+  highlightedOrigins?: Origin[] | null;
 }
 
-const InfluenceBoard: React.FC<InfluenceBoardProps> = ({ board, boardOrientation = 'white' }) => {
+const InfluenceBoard: React.FC<InfluenceBoardProps> = ({ 
+  board, 
+  boardOrientation = 'white',
+  onOriginHighlight,
+  highlightedOrigins: externalHighlightedOrigins
+}) => {
+  const [internalHighlightedOrigins, setInternalHighlightedOrigins] = useState<Origin[] | null>(null);
+
+  const highlightedOrigins = externalHighlightedOrigins ?? internalHighlightedOrigins;
+
   // Vérifier que le tableau a la bonne structure
   if (!board || !Array.isArray(board) || board.length !== 8) {
     console.error('Invalid board structure:', board);
@@ -46,8 +57,39 @@ const InfluenceBoard: React.FC<InfluenceBoardProps> = ({ board, boardOrientation
 
   // Fonction pour obtenir le texte à afficher dans la cellule
   const getCellText = (cell: ApiInfluenceCell | null) => {
-    if (!cell) return '';
+    if (!cell || cell.quantity === 0) return '';
     return `${cell.quantity}`;
+  };
+
+  // Fonction pour vérifier si une cellule est une origine mise en évidence
+  const isHighlightedOrigin = (row: number, col: number) => {
+    if (!highlightedOrigins) return false;
+    // Les coordonnées de l'origine (x=colonne, y=rangée) doivent correspondre
+    // aux indices de boucle (j=colonne, i=rangée) directement.
+    return highlightedOrigins.some(origin => origin.x === col && origin.y === row);
+  };
+
+  // Gestionnaire pour le survol d'un indicateur de quantité
+  const handleIndicatorHover = (cell: ApiInfluenceCell | null) => {
+    if (cell && cell.origins && cell.quantity > 0) {
+      setInternalHighlightedOrigins(cell.origins);
+    } else {
+      // Pas besoin de gérer le cas else explicitement pour le hover interne
+      // setInternalHighlightedOrigins(null) sera appelé au leave
+    }
+  };
+
+  // Gestionnaire pour la fin du survol
+  const handleIndicatorLeave = () => {
+    setInternalHighlightedOrigins(null); // Gérer uniquement l'état interne
+    // NE PAS appeler onOriginHighlight ici
+  };
+
+  // Gestionnaire pour le clic sur un indicateur de quantité
+  const handleIndicatorClick = (cell: ApiInfluenceCell | null) => {
+    if (onOriginHighlight) {
+      onOriginHighlight(cell?.origins ?? null);
+    }
   };
 
   // Créer un tableau de cellules dans l'ordre correct pour l'affichage
@@ -60,9 +102,10 @@ const InfluenceBoard: React.FC<InfluenceBoardProps> = ({ board, boardOrientation
         continue;
       }
       
-      const cell = board[i][j];
-      const dominantColor = getDominantColor(cell);
-      const cellText = getCellText(cell);
+      const cellData = board[i][j];
+      const dominantColor = getDominantColor(cellData);
+      const cellText = getCellText(cellData);
+      const isOrigin = isHighlightedOrigin(i, j);
       
       let backgroundColor = 'transparent';
       if (dominantColor === 'green') {
@@ -73,15 +116,14 @@ const InfluenceBoard: React.FC<InfluenceBoardProps> = ({ board, boardOrientation
         backgroundColor = '#e74c3c'; // Rouge plus vif
       }
       
-      // Calculer la position en fonction de l'orientation du plateau
-      // Pour un effet miroir parfait, nous devons inverser à la fois les lignes et les colonnes
+      // Calculer la position en fonction de l'orientation du plateau et de la structure des données (i=0 -> rang 1)
       const top = boardOrientation === 'white' 
-        ? `${(7 - i) * 12.5}%` // Blancs en bas (a1 en bas gauche)
-        : `${i * 12.5}%`;      // Noirs en bas (a8 en bas gauche)
+        ? `${(7 - i) * 12.5}%` // Blancs: rang 1 (i=0) en bas
+        : `${i * 12.5}%`;      // Noirs: rang 1 (i=0) en haut
       
       const left = boardOrientation === 'white'
-        ? `${j * 12.5}%`       // Blancs en bas (a1 en bas gauche)
-        : `${(7 - j) * 12.5}%`; // Noirs en bas (a8 en bas gauche)
+        ? `${j * 12.5}%`       // Blancs: col 'a' (j=0) à gauche
+        : `${(7 - j) * 12.5}%`; // Noirs: col 'a' (j=0) à droite
       
       cells.push({
         key: `${i}-${j}`,
@@ -92,13 +134,16 @@ const InfluenceBoard: React.FC<InfluenceBoardProps> = ({ board, boardOrientation
           width: '12.5%',
           height: '12.5%',
           backgroundColor: 'transparent',
-          border: 'none',
+          border: isOrigin ? '2px dashed #FF69B4' : 'none',
+          boxShadow: isOrigin ? '0 0 8px 2px #FF69B4' : 'none',
+          boxSizing: 'border-box' as const,
           pointerEvents: 'none' as const,
+          zIndex: isOrigin ? 2 : 1,
         },
         indicatorStyle: {
           position: 'absolute' as const,
-          top: '5%',
-          right: '5%',
+          bottom: '5%',
+          left: '5%',
           width: '25%',
           height: '25%',
           backgroundColor,
@@ -107,14 +152,17 @@ const InfluenceBoard: React.FC<InfluenceBoardProps> = ({ board, boardOrientation
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          pointerEvents: 'none' as const,
+          pointerEvents: 'auto' as const,
           color: '#ffffff',
           fontWeight: 'bold',
           fontSize: '12px',
           textShadow: '0px 0px 2px rgba(0,0,0,0.5)',
+          cursor: cellData && cellData.quantity > 0 ? 'pointer' : 'default',
+          zIndex: 3,
         },
         cellText,
-        hasInfluence: !!cell
+        hasIndicator: !!cellData && cellData.quantity > 0,
+        cellData
       });
     }
   }
@@ -127,8 +175,13 @@ const InfluenceBoard: React.FC<InfluenceBoardProps> = ({ board, boardOrientation
           className="influence-cell"
           style={cell.style}
         >
-          {cell.hasInfluence && (
-            <div style={cell.indicatorStyle}>
+          {cell.hasIndicator && (
+            <div 
+              style={cell.indicatorStyle}
+              onMouseEnter={() => handleIndicatorHover(cell.cellData)}
+              onMouseLeave={handleIndicatorLeave}
+              onClick={() => handleIndicatorClick(cell.cellData)}
+            >
               {cell.cellText}
             </div>
           )}

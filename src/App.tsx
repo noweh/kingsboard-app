@@ -5,7 +5,7 @@ import './App.css';
 import InfluenceBoard from './components/InfluenceBoard';
 import AvailablePieces from './components/CapturedPieces';
 import { retrieveColors } from './services/api';
-import { Piece as ApiPiece, ApiInfluenceCell } from './types';
+import { Piece as ApiPiece, ApiInfluenceCell, Origin } from './types';
 
 // Type for pieces in react-chessboard
 type ChessPiece = string;
@@ -55,6 +55,7 @@ function App() {
   const [showAboutSection, setShowAboutSection] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedBoardPiece, setSelectedBoardPiece] = useState<Square | null>(null);
+  const [highlightedOrigins, setHighlightedOrigins] = useState<Origin[] | null>(null);
 
   // Function to display a temporary error message
   const showTemporaryError = (message: string) => {
@@ -94,19 +95,16 @@ function App() {
     const pieces: ApiPiece[] = [];
     const board = game.board();
     
-    // Iterate through the board in the order expected by the API
-    for (let col = 0; col < 8; col++) {
-      for (let row = 0; row < 8; row++) {
+    // Iterate through the board
+    for (let row = 0; row < 8; row++) { // Iterate rows first (0-7 corresponds to 8-1)
+      for (let col = 0; col < 8; col++) { // Iterate columns (0-7 corresponds to a-h)
         const piece = board[row][col];
         if (piece) {
-          // Determine team based on piece color
-          // White pieces are always "allies", black pieces are always "enemies"
           const team = piece.color === 'w' ? 'allies' : 'enemies';
           
-          // Add all pieces, not just those in the current view
           pieces.push({
-            x: col,
-            y: 7 - row, // Reverse the row to match chess notation (1-8)
+            x: col,                 // Column index (0-7)
+            y: 7 - row,             // Row index inverted for API (0-7, where 0 is rank 1)
             type: convertPieceTypeToApi(piece.type),
             team
           });
@@ -131,17 +129,14 @@ function App() {
       });
       
       if (response?.data?.board && Array.isArray(response.data.board) && response.data.board.length === 8) {
-        // Create a deep copy of the array to avoid reference issues
         const boardCopy = JSON.parse(JSON.stringify(response.data.board));
         setInfluenceBoard(boardCopy);
       } else {
         console.error('Invalid board structure received from API:', response?.data?.board);
-        // Initialize with empty board if response is invalid
         setInfluenceBoard(Array(8).fill(null).map(() => Array(8).fill(null)));
       }
     } catch (error) {
       console.error('Error updating influence board:', error);
-      // Initialize with empty board on error
       setInfluenceBoard(Array(8).fill(null).map(() => Array(8).fill(null)));
     }
   };
@@ -258,9 +253,10 @@ function App() {
     
     // Check if a piece is already selected on the board
     if (selectedBoardPiece) {
-      // If clicking on the same square, deselect it
+      // If clicking on the same square, deselect it and clear highlighted origins
       if (selectedBoardPiece === square) {
         setSelectedBoardPiece(null);
+        setHighlightedOrigins(null); // Clear highlights
         return;
       }
       
@@ -270,27 +266,51 @@ function App() {
       
       if (!sourcePiece) {
         setSelectedBoardPiece(null);
+        setHighlightedOrigins(null); // Clear highlights
         return;
       }
       
       // Try to move the piece
       const moveResult = onDrop(selectedBoardPiece, square);
       
-      // If the move was successful, deselect the piece
+      // If the move was successful, deselect the piece and clear highlighted origins
       if (moveResult) {
         setSelectedBoardPiece(null);
+        setHighlightedOrigins(null); // Clear highlights
       }
       
       return;
     }
     
-    // If clicking on a square with a piece, select it
+    // If clicking on a square with a piece, select it and highlight the squares it influences
     const piece = game.get(square);
     if (piece) {
-      setSelectedBoardPiece(square);
+      setSelectedBoardPiece(square); // Select the piece
+
+      const pieceX = square.charCodeAt(0) - 97; // 'a' -> 0
+      const pieceY = parseInt(square.charAt(1)) - 1; // '1' -> 0
+
+      const influencedSquaresToHighlight: Origin[] = [];
+      for (let i = 0; i < 8; i++) { // i = row index in influenceBoard (0 = rank 1)
+        for (let j = 0; j < 8; j++) { // j = col index in influenceBoard (0 = col 'a')
+          const cell = influenceBoard[i][j];
+          if (cell?.origins) {
+            // Check if the clicked piece is one of the origins for this cell's influence
+            const pieceIsOrigin = cell.origins.some(origin => origin.x === pieceX && origin.y === pieceY);
+            if (pieceIsOrigin) {
+              // This cell (i, j) is influenced by the clicked piece. Highlight it.
+              influencedSquaresToHighlight.push({ x: j, y: i }); // Store cell coords (col, row) based on board structure
+            }
+          }
+        }
+      }
+      // The state `highlightedOrigins` will store the coordinates of the influenced squares
+      setHighlightedOrigins(influencedSquaresToHighlight);
+
     } else {
-      // Otherwise, select the square for later movement
+      // Otherwise, select the square for later movement (if needed) and clear highlights
       setSelectedSquare(square);
+      setHighlightedOrigins(null); // Clear highlights when clicking empty square
     }
   };
 
@@ -477,6 +497,14 @@ function App() {
     setSelectedPiece({ type: pieceType, team });
   };
 
+  // Function to handle origin highlight updates from InfluenceBoard (due to hover OR CLICK)
+  const handleOriginHighlight = (origins: Origin[] | null) => {
+    setHighlightedOrigins(origins); // Mettre à jour les origines à surligner
+    if (origins) {
+      setSelectedBoardPiece(null); // Désélectionner la pièce si on clique sur un indicateur
+    }
+  };
+
   return (
     <div className="app">
       <h1 className="app-title">
@@ -571,7 +599,12 @@ function App() {
               } : {}}
             />
             {showInfluenceColors && (
-              <InfluenceBoard board={influenceBoard} boardOrientation={boardOrientation} />
+              <InfluenceBoard 
+                board={influenceBoard} 
+                boardOrientation={boardOrientation} 
+                onOriginHighlight={handleOriginHighlight}
+                highlightedOrigins={highlightedOrigins}
+              />
             )}
           </div>
           
