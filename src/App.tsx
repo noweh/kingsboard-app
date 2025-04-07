@@ -54,6 +54,7 @@ function App() {
   const [showInfluenceColors, setShowInfluenceColors] = useState(true);
   const [showAboutSection, setShowAboutSection] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [selectedBoardPiece, setSelectedBoardPiece] = useState<Square | null>(null);
 
   // Function to display a temporary error message
   const showTemporaryError = (message: string) => {
@@ -255,8 +256,42 @@ function App() {
       return;
     }
     
-    // Otherwise, select the square for later movement
-    setSelectedSquare(square);
+    // Check if a piece is already selected on the board
+    if (selectedBoardPiece) {
+      // If clicking on the same square, deselect it
+      if (selectedBoardPiece === square) {
+        setSelectedBoardPiece(null);
+        return;
+      }
+      
+      // Check if the target square is valid
+      const gameCopy = new Chess(game.fen());
+      const sourcePiece = gameCopy.get(selectedBoardPiece);
+      
+      if (!sourcePiece) {
+        setSelectedBoardPiece(null);
+        return;
+      }
+      
+      // Try to move the piece
+      const moveResult = onDrop(selectedBoardPiece, square);
+      
+      // If the move was successful, deselect the piece
+      if (moveResult) {
+        setSelectedBoardPiece(null);
+      }
+      
+      return;
+    }
+    
+    // If clicking on a square with a piece, select it
+    const piece = game.get(square);
+    if (piece) {
+      setSelectedBoardPiece(square);
+    } else {
+      // Otherwise, select the square for later movement
+      setSelectedSquare(square);
+    }
   };
 
   // Handle keyboard keys
@@ -528,6 +563,12 @@ function App() {
               }}
               customDarkSquareStyle={{ backgroundColor: '#34495e' }}
               customLightSquareStyle={{ backgroundColor: '#f5f7fa' }}
+              customSquareStyles={selectedBoardPiece ? {
+                [selectedBoardPiece]: {
+                  backgroundColor: 'rgba(52, 152, 219, 0.5)',
+                  boxShadow: '0 0 0 2px #3498db'
+                }
+              } : {}}
             />
             {showInfluenceColors && (
               <InfluenceBoard board={influenceBoard} boardOrientation={boardOrientation} />
