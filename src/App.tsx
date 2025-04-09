@@ -162,22 +162,65 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSquare]); // Désactivation temporaire de l'avertissement
 
-  // Listener pour le drop hors plateau
+  // Listener pour le drop hors plateau UNIQUEMENT pour les pièces du sac
   useEffect(() => {
-    const handleMouseUp = (event: MouseEvent) => {
+    const handleInteractionEnd = (event: MouseEvent | TouchEvent) => {
+      // Ne rien faire si on ne draggait pas depuis le sac
+      if (!draggedPiece) return;
+
       const boardElement = document.querySelector('.board-container');
-      if (draggedPiece && boardElement && !boardElement.contains(event.target as Node)) {
-        setDraggedPiece(null);
-        showTemporaryError('Piece removed');
+      if (!boardElement) return;
+
+      let clientX: number;
+      let clientY: number;
+
+      // Obtenir les coordonnées de fin d'interaction
+      if (event instanceof MouseEvent) {
+        clientX = event.clientX;
+        clientY = event.clientY;
+      } else if (event.changedTouches && event.changedTouches.length > 0) {
+        // Utiliser la dernière position du doigt pour touchend
+        clientX = event.changedTouches[0].clientX;
+        clientY = event.changedTouches[0].clientY;
+      } else {
+        return; // Pas d'info de position
       }
-      if (draggedSourceSquare) {
-         setDraggedSourceSquare(null);
+
+      const rect = boardElement.getBoundingClientRect();
+
+      // Vérifier si les coordonnées sont hors du plateau
+      const isOutside = clientX < rect.left || clientX > rect.right || 
+                        clientY < rect.top || clientY > rect.bottom;
+
+      if (isOutside) {
+        // Utiliser un petit délai pour s'assurer qu'un éventuel drop valide n'a pas eu lieu juste avant
+        setTimeout(() => {
+          // Vérifier à nouveau l'état dans le timeout
+          if (draggedPiece) {
+              setDraggedPiece(null); // Annuler la pièce du sac
+              // Pas de message d'erreur, c'est une annulation
+          }
+        }, 0);
       }
+      
+      // Pour les pièces glissées depuis le plateau (`draggedSourceSquare`),
+      // on laisse react-chessboard gérer le retour à la case d'origine.
+      // On nettoie juste l'état source si nécessaire (déjà fait dans onPieceDragEnd implicitement ou handleMouseUp avant?)
+      // Simplifions : Ne pas toucher à draggedSourceSquare ici.
     };
-    window.addEventListener('mouseup', handleMouseUp);
-    return () => window.removeEventListener('mouseup', handleMouseUp);
+
+    // Écouter la fin de l'interaction souris et tactile
+    window.addEventListener('mouseup', handleInteractionEnd);
+    window.addEventListener('touchend', handleInteractionEnd);
+    // window.addEventListener('touchcancel', handleInteractionEnd); // Pourrait être ajouté si touchend ne suffit pas
+
+    return () => {
+      window.removeEventListener('mouseup', handleInteractionEnd);
+      window.removeEventListener('touchend', handleInteractionEnd);
+      // window.removeEventListener('touchcancel', handleInteractionEnd);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [draggedPiece, draggedSourceSquare]); // Désactivation temporaire de l'avertissement
+  }, [draggedPiece]); // Dépend uniquement de l'état de la pièce du sac
 
   // Handle piece movement
   const onDrop = (sourceSquare: Square, targetSquare: Square) => {
