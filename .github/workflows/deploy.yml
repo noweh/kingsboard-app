@@ -1,0 +1,60 @@
+# .github/workflows/deploy-react.yml
+
+name: Deploy React App (King's Board)
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch: # Permet le déclenchement manuel
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci 
+
+    # --- Build Step ---
+    - name: Build React application
+      run: npm run build
+      env:
+        # Très important: Définir l'URL de l'API de PRODUCTION ici
+        # Utilisez les secrets ou variables GitHub Actions
+        REACT_APP_API_HOST: ${{ secrets.PRODUCTION_API_HOST }} # Exemple avec un Secret d'Actions
+        # Assurez-vous que cette variable correspond à l'URL publique de votre API Laravel
+
+    # --- Deployment Section ---
+
+    # Installe sshpass pour l'authentification par mot de passe avec rsync
+    - name: Install sshpass
+      run: sudo apt-get update && sudo apt-get install -y sshpass
+
+    # Déploie le contenu du dossier 'build' vers le serveur
+    - name: Deploy built files using rsync
+      env:
+        SSHPASS: ${{ secrets.SSH_PASSWORD }}         # Votre mot de passe SSH
+        REMOTE_HOST: ${{ secrets.REMOTE_HOST }}       # L'IP ou le nom d'hôte de votre serveur
+        REMOTE_USER: ${{ secrets.REMOTE_USER }}       # Votre nom d'utilisateur SSH
+        # IMPORTANT: Nouveau secret pour le chemin web racine du frontend React
+        TARGET_PATH: ${{ secrets.REACT_APP_TARGET_PATH }} # Ex: /var/www/kingsboard.fr/html ou similaire
+      run: |
+        echo "Deploying ./build/ contents to ${REMOTE_USER}@${REMOTE_HOST}:${TARGET_PATH}"
+        # -a : archive (préserve permissions, liens, etc.)
+        # -v : verbose
+        # -z : compresse pendant le transfert
+        # --delete : supprime les fichiers sur la destination qui n'existent plus dans la source
+        # ./build/ : La source (notez le / final pour copier le *contenu* du dossier)
+        sshpass -e rsync -avz --delete \
+        --rsh="ssh -o StrictHostKeyChecking=no -p 22" \
+        ./build/ ${REMOTE_USER}@${REMOTE_HOST}:${TARGET_PATH}
