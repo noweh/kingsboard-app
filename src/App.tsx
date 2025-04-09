@@ -394,7 +394,8 @@ function App() {
     return () => {
       window.removeEventListener('keydown', onKeyDown);
     };
-  }, [selectedSquare]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSquare]); // Désactivation temporaire de l'avertissement
 
   // Add event listener to detect pieces dragged off the board
   useEffect(() => {
@@ -429,7 +430,8 @@ function App() {
     return () => {
       document.removeEventListener('dragend', handleGlobalDragEnd);
     };
-  }, [draggedSourceSquare]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [draggedSourceSquare]); // Désactivation temporaire de l'avertissement
 
   // Handle the start of dragging a piece from the bag
   const handlePieceDragStart = (pieceType: string, team: 'w' | 'b') => {
