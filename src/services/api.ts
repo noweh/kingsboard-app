@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
-import type { ColorCell, Piece, ApiResponse, ColorRequest, ApiInfluenceCell } from '../types';
+import type { ApiResponse, ColorRequest } from '../types';
 
 // Créer une instance axios avec des configurations par défaut
 const api = axios.create({

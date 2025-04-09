@@ -141,22 +141,43 @@ function App() {
     }
   };
 
-  // Effect to fetch influence data when game or view changes
+  // Met à jour l'influence quand le jeu ou la vue change
   useEffect(() => {
     updateInfluenceBoard();
-  }, [game, view]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [game, view]); // Désactivation temporaire de l'avertissement
 
-  // *** NEW EFFECT ***
-  // Effect to re-highlight influenced squares if the selected piece
-  // or the influence data itself changes.
+  // Met à jour la surbrillance quand la pièce sélectionnée change ou quand l'influence change
   useEffect(() => {
     if (selectedBoardPiece) {
       highlightInfluencedSquares(selectedBoardPiece);
     }
-    // Dependencies: Re-run when the selected piece changes OR when the influence board data changes.
-    // highlightInfluencedSquares is stable as it's defined outside render or doesn't depend on changing state/props other than influenceBoard.
-  }, [influenceBoard, selectedBoardPiece]); 
-  // *** END NEW EFFECT ***
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [influenceBoard, selectedBoardPiece]); // Désactivation temporaire de l'avertissement
+
+  // Listener pour le clavier
+  useEffect(() => {
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSquare]); // Désactivation temporaire de l'avertissement
+
+  // Listener pour le drop hors plateau
+  useEffect(() => {
+    const handleMouseUp = (event: MouseEvent) => {
+      const boardElement = document.querySelector('.board-container');
+      if (draggedPiece && boardElement && !boardElement.contains(event.target as Node)) {
+        setDraggedPiece(null);
+        showTemporaryError('Piece removed');
+      }
+      if (draggedSourceSquare) {
+         setDraggedSourceSquare(null);
+      }
+    };
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => window.removeEventListener('mouseup', handleMouseUp);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draggedPiece, draggedSourceSquare]); // Désactivation temporaire de l'avertissement
 
   // Handle piece movement
   const onDrop = (sourceSquare: Square, targetSquare: Square) => {

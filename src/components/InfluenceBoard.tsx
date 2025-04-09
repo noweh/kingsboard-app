@@ -21,8 +21,6 @@ const InfluenceBoard: React.FC<InfluenceBoardProps> = ({
   // Vérifier que le tableau a la bonne structure
   if (!board || !Array.isArray(board) || board.length !== 8) {
     console.error('Invalid board structure:', board);
-    // Initialiser un tableau vide avec la bonne structure
-    const emptyBoard = Array(8).fill(null).map(() => Array(8).fill(null));
     return (
       <div className="influence-overlay">
         {Array(64).fill(null).map((_, index) => {

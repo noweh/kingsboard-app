@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PieceSymbol } from 'chess.js';
+// import { PieceSymbol } from 'chess.js'; // Supprimé car non utilisé
 
 interface Props {
   onPieceDragStart: (pieceType: string, team: 'w' | 'b') => void;
