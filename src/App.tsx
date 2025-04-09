@@ -479,52 +479,39 @@ function App() {
   // *** NOUVEAU : Listener pour la fin d'interaction TACTILE hors zone ***
   useEffect(() => {
     const handleTouchEndOutside = (event: TouchEvent) => {
-      // Si on ne glissait pas depuis le plateau, ne rien faire
       if (!draggedSourceSquare) return;
-
       const boardElement = document.querySelector('.board-container');
       if (!boardElement) return;
 
-      // Obtenir les coordonnées de fin d'interaction tactile
       let clientX: number | undefined;
       let clientY: number | undefined;
       if (event.changedTouches && event.changedTouches.length > 0) {
         clientX = event.changedTouches[0].clientX;
         clientY = event.changedTouches[0].clientY;
       } else {
-        return; // Ne peut pas obtenir les coordonnées
+        return;
       }
-
       if (clientX === undefined || clientY === undefined) return;
 
       const rect = boardElement.getBoundingClientRect();
       const isOutside = clientX < rect.left || clientX > rect.right || 
                         clientY < rect.top  || clientY > rect.bottom;
       
-      // Si touchend/touchcancel hors zone ET on glissait depuis le plateau
       if (isOutside) {
-        // Nettoyer l'état source pour annuler le drag visuellement sur mobile
-        // Laisser react-chessboard gérer le retour de la pièce
-        // Utiliser setTimeout pour éviter conflit potentiel avec d'autres events
-        setTimeout(() => {
-            // Double vérification au cas où l'état aurait changé entre temps
-            if(draggedSourceSquare){
-                setDraggedSourceSquare(null);
-            }
-        } , 0);
+        // Nettoyer l'état source IMMÉDIATEMENT pour annuler le drag sur mobile
+        setDraggedSourceSquare(null);
       }
-      // Si touchend/touchcancel SUR la zone, on laisse onDrop/onPieceDragEnd gérer
     };
 
     window.addEventListener('touchend', handleTouchEndOutside);
-    window.addEventListener('touchcancel', handleTouchEndOutside); // Ajouter touchcancel par sécurité
+    window.addEventListener('touchcancel', handleTouchEndOutside);
 
     return () => {
       window.removeEventListener('touchend', handleTouchEndOutside);
       window.removeEventListener('touchcancel', handleTouchEndOutside);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [draggedSourceSquare]); // Dépend uniquement de l'état de drag source
+  }, [draggedSourceSquare]); 
   // *** FIN NOUVEAU Listener Tactile ***
 
   // Handle the start of dragging a piece from the bag
