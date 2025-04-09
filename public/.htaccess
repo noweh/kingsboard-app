@@ -1,0 +1,29 @@
+<IfModule mod_rewrite.c>
+  # Enable the rewrite engine
+  RewriteEngine On
+
+  # Optional: Set the base path if the application is not at the domain root (not necessary for kingsboard.fr)
+  # RewriteBase /
+
+  # --- Redirections for Production (kingsboard.fr) ---
+
+  # 1. Redirect www.kingsboard.fr to kingsboard.fr (and force HTTPS)
+  RewriteCond %{HTTP_HOST} ^www\.kingsboard\.fr$ [NC]
+  RewriteRule ^(.*)$ https://kingsboard.fr%{REQUEST_URI} [L,R=301]
+
+  # 2. Redirect HTTP to HTTPS for kingsboard.fr (non-www)
+  #    This condition applies only if the previous steps haven't already redirected.
+  RewriteCond %{HTTP_HOST} ^kingsboard\.fr$ [NC]
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # --- Routing Handling for React (SPA) ---
+
+  # Don't rewrite requests for existing files
+  RewriteCond %{REQUEST_FILENAME} !-f
+  # Don't rewrite requests for existing directories
+  RewriteCond %{REQUEST_FILENAME} !-d
+  # Rewrite all other requests to index.html so React Router can handle the route
+  RewriteRule ^ index.html [L]
+
+</IfModule>
