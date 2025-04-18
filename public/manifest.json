@@ -10,12 +10,12 @@
     {
       "src": "crown-icon.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "72x72"
     },
     {
-      "src": "crown-icon.png",
+      "src": "crown.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "1440x1280"
     }
   ],
   "start_url": ".",
