@@ -1,61 +1,70 @@
-import React, { useState } from 'react';
-import { ApiInfluenceCell, Origin } from '../types';
+import React, { useState } from "react";
+import { ApiInfluenceCell, Origin } from "../types";
 
 interface InfluenceBoardProps {
   board: (ApiInfluenceCell | null)[][];
-  boardOrientation?: 'white' | 'black';
+  boardOrientation?: "white" | "black";
   onOriginHighlight?: (origins: Origin[] | null) => void;
   highlightedOrigins?: Origin[] | null;
 }
 
-const InfluenceBoard: React.FC<InfluenceBoardProps> = ({ 
-  board, 
-  boardOrientation = 'white',
+const InfluenceBoard: React.FC<InfluenceBoardProps> = ({
+  board,
+  boardOrientation = "white",
   onOriginHighlight,
-  highlightedOrigins: externalHighlightedOrigins
+  highlightedOrigins: externalHighlightedOrigins,
 }) => {
-  const [internalHighlightedOrigins, setInternalHighlightedOrigins] = useState<Origin[] | null>(null);
+  const [internalHighlightedOrigins, setInternalHighlightedOrigins] = useState<
+    Origin[] | null
+  >(null);
 
-  const highlightedOrigins = externalHighlightedOrigins ?? internalHighlightedOrigins;
+  const highlightedOrigins =
+    externalHighlightedOrigins ?? internalHighlightedOrigins;
 
   // Vérifier que le tableau a la bonne structure
   if (!board || !Array.isArray(board) || board.length !== 8) {
-    console.error('Invalid board structure:', board);
+    console.error("Invalid board structure:", board);
+    // Initialiser un tableau vide avec la bonne structure
+    const emptyBoard = Array(8)
+      .fill(null)
+      .map(() => Array(8).fill(null));
     return (
       <div className="influence-overlay">
-        {Array(64).fill(null).map((_, index) => {
-          const row = Math.floor(index / 8);
-          const col = index % 8;
-          return (
-            <div
-              key={`${row}-${col}`}
-              className="influence-cell"
-              style={{
-                position: 'absolute',
-                top: `${(7 - row) * 12.5}%`,
-                left: `${col * 12.5}%`,
-                width: '12.5%',
-                height: '12.5%',
-                backgroundColor: 'transparent',
-                border: 'none',
-                pointerEvents: 'none',
-              }}
-            />
-          );
-        })}
+        {Array(64)
+          .fill(null)
+          .map((_, index) => {
+            const row = Math.floor(index / 8);
+            const col = index % 8;
+            return (
+              <div
+                key={`${row}-${col}`}
+                className="influence-cell"
+                style={{
+                  position: "absolute",
+                  top: `${(7 - row) * 12.5}%`,
+                  left: `${col * 12.5}%`,
+                  width: "12.5%",
+                  height: "12.5%",
+                  backgroundColor: "transparent",
+                  border: "none",
+                  pointerEvents: "none",
+                }}
+              />
+            );
+          })}
       </div>
     );
   }
 
   // Fonction pour obtenir la couleur dominante
   const getDominantColor = (cell: ApiInfluenceCell | null) => {
-    if (!cell) return 'transparent';
+    if (!cell) return "transparent";
     return cell.color;
   };
 
   // Fonction pour obtenir le texte à afficher dans la cellule
   const getCellText = (cell: ApiInfluenceCell | null) => {
-    if (!cell || cell.quantity === 0) return '';
+    if (!cell || cell.quantity === 0) return "";
     return `${cell.quantity}`;
   };
 
@@ -64,7 +73,9 @@ const InfluenceBoard: React.FC<InfluenceBoardProps> = ({
     if (!highlightedOrigins) return false;
     // Les coordonnées de l'origine (x=colonne, y=rangée) doivent correspondre
     // aux indices de boucle (j=colonne, i=rangée) directement.
-    return highlightedOrigins.some(origin => origin.x === col && origin.y === row);
+    return highlightedOrigins.some(
+      (origin) => origin.x === col && origin.y === row
+    );
   };
 
   // Gestionnaire pour le survol d'un indicateur de quantité
@@ -99,82 +110,80 @@ const InfluenceBoard: React.FC<InfluenceBoardProps> = ({
         console.error(`Invalid row structure at index ${i}:`, board[i]);
         continue;
       }
-      
+
       const cellData = board[i][j];
       const dominantColor = getDominantColor(cellData);
       const cellText = getCellText(cellData);
       const isOrigin = isHighlightedOrigin(i, j);
-      
-      let backgroundColor = 'transparent';
-      if (dominantColor === 'green') {
-        backgroundColor = '#2ecc71'; // Vert plus vif
-      } else if (dominantColor === 'yellow') {
-        backgroundColor = '#f1c40f'; // Jaune plus vif
-      } else if (dominantColor === 'red') {
-        backgroundColor = '#e74c3c'; // Rouge plus vif
+
+      let backgroundColor = "transparent";
+      if (dominantColor === "green") {
+        backgroundColor = "#2ecc71"; // Vert plus vif
+      } else if (dominantColor === "yellow") {
+        backgroundColor = "#f1c40f"; // Jaune plus vif
+      } else if (dominantColor === "red") {
+        backgroundColor = "#e74c3c"; // Rouge plus vif
       }
-      
+
       // Calculer la position en fonction de l'orientation du plateau et de la structure des données (i=0 -> rang 1)
-      const top = boardOrientation === 'white' 
-        ? `${(7 - i) * 12.5}%` // Blancs: rang 1 (i=0) en bas
-        : `${i * 12.5}%`;      // Noirs: rang 1 (i=0) en haut
-      
-      const left = boardOrientation === 'white'
-        ? `${j * 12.5}%`       // Blancs: col 'a' (j=0) à gauche
-        : `${(7 - j) * 12.5}%`; // Noirs: col 'a' (j=0) à droite
-      
+      const top =
+        boardOrientation === "white"
+          ? `${(7 - i) * 12.5}%` // Blancs: rang 1 (i=0) en bas
+          : `${i * 12.5}%`; // Noirs: rang 1 (i=0) en haut
+
+      const left =
+        boardOrientation === "white"
+          ? `${j * 12.5}%` // Blancs: col 'a' (j=0) à gauche
+          : `${(7 - j) * 12.5}%`; // Noirs: col 'a' (j=0) à droite
+
       cells.push({
         key: `${i}-${j}`,
         style: {
-          position: 'absolute' as const,
+          position: "absolute" as const,
           top,
           left,
-          width: '12.5%',
-          height: '12.5%',
-          backgroundColor: 'transparent',
-          border: isOrigin ? '2px dashed #FF69B4' : 'none',
-          boxShadow: isOrigin ? '0 0 8px 2px #FF69B4' : 'none',
-          boxSizing: 'border-box' as const,
-          pointerEvents: 'none' as const,
+          width: "12.5%",
+          height: "12.5%",
+          backgroundColor: "transparent",
+          border: isOrigin ? "2px dashed #FF69B4" : "none",
+          boxShadow: isOrigin ? "0 0 8px 2px #FF69B4" : "none",
+          boxSizing: "border-box" as const,
+          pointerEvents: "none" as const,
           zIndex: isOrigin ? 2 : 1,
         },
         indicatorStyle: {
-          position: 'absolute' as const,
-          top: '5%',
-          right: '5%',
-          width: '25%',
-          height: '25%',
+          position: "absolute" as const,
+          top: "5%",
+          right: "5%",
+          width: "25%",
+          height: "25%",
           backgroundColor,
-          border: '1px solid #ddd',
-          borderRadius: '2px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          pointerEvents: 'auto' as const,
-          color: '#ffffff',
-          fontWeight: 'bold',
-          fontSize: '12px',
-          textShadow: '0px 0px 2px rgba(0,0,0,0.5)',
-          cursor: cellData && cellData.quantity > 0 ? 'pointer' : 'default',
+          border: "1px solid #ddd",
+          borderRadius: "2px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          pointerEvents: "auto" as const,
+          color: "#ffffff",
+          fontWeight: "bold",
+          fontSize: "12px",
+          textShadow: "0px 0px 2px rgba(0,0,0,0.5)",
+          cursor: cellData && cellData.quantity > 0 ? "pointer" : "default",
           zIndex: 3,
         },
         cellText,
         hasIndicator: !!cellData && cellData.quantity > 0,
-        cellData
+        cellData,
       });
     }
   }
 
   return (
     <div className="influence-overlay">
-      {cells.map(cell => (
-        <div
-          key={cell.key}
-          className="influence-cell"
-          style={cell.style}
-        >
+      {cells.map((cell) => (
+        <div key={cell.key} className="influence-cell" style={cell.style}>
           {cell.hasIndicator && (
-            <div 
+            <div
               style={cell.indicatorStyle}
               onMouseEnter={() => handleIndicatorHover(cell.cellData)}
               onMouseLeave={handleIndicatorLeave}
@@ -189,4 +198,4 @@ const InfluenceBoard: React.FC<InfluenceBoardProps> = ({
   );
 };
 
-export default InfluenceBoard; 
+export default InfluenceBoard;

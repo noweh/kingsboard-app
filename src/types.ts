@@ -12,7 +12,7 @@ export interface Piece {
   x: number;
   y: number;
   type: string;
-  team: 'allies' | 'enemies';
+  team: "allies" | "enemies";
 }
 
 // Types pour les réponses de l'API
@@ -22,7 +22,7 @@ export interface Origin {
 }
 
 export interface ApiInfluenceCell {
-  color: 'green' | 'yellow' | 'red';
+  color: "green" | "yellow" | "red";
   quantity: number;
   origins?: Origin[];
 }
@@ -36,7 +36,7 @@ export interface ApiResponse {
 // Types pour les requêtes de l'API
 export interface ColorRequest {
   data: {
-    view: 'allies' | 'enemies';
+    view: "allies" | "enemies";
     pieces: Piece[];
   };
-} 
+}
