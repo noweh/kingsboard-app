@@ -5,7 +5,7 @@
   padding: 15px;
   min-height: 100vh;
   background-color: #f0f2f5;
-  font-family: 'Poppins', 'Arial', sans-serif;
+  font-family: "Poppins", "Arial", sans-serif;
   background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   overflow-y: auto;
   overflow-x: hidden;
@@ -80,9 +80,13 @@
   margin-top: 0;
   margin-bottom: 15px;
   text-align: center;
-  white-space: nowrap;
   width: 100%;
+  max-width: 450px;
+  margin-left: auto;
+  margin-right: auto;
   letter-spacing: 0.5px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .main-content {
@@ -145,12 +149,22 @@
 
 /* Styles pour les cases mises en évidence */
 .react-chessboard .square.highlight {
-  background-color: rgba(46, 204, 113, 0.5) !important; /* Vert clair pour les cases mises en évidence */
+  background-color: rgba(
+    46,
+    204,
+    113,
+    0.5
+  ) !important; /* Vert clair pour les cases mises en évidence */
 }
 
 /* Styles pour les mouvements valides */
 .react-chessboard .square.valid-move {
-  background-color: rgba(52, 152, 219, 0.5) !important; /* Bleu clair pour les mouvements valides */
+  background-color: rgba(
+    52,
+    152,
+    219,
+    0.5
+  ) !important; /* Bleu clair pour les mouvements valides */
 }
 
 /* Styles pour les pièces */
@@ -271,7 +285,7 @@ button:active {
 }
 
 .available-pieces::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -403,7 +417,7 @@ button:active {
 }
 
 .instructions::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -422,7 +436,7 @@ button:active {
 }
 
 .instructions p::before {
-  content: '•';
+  content: "•";
   position: absolute;
   left: 0;
   color: #3498db;
@@ -466,7 +480,7 @@ button:active {
 }
 
 .instructions-title::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
@@ -490,7 +504,7 @@ button:active {
 
 /* Effet de survol pour le plateau */
 .board-container::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -512,24 +526,25 @@ button:active {
     align-items: center;
     gap: 20px;
   }
-  
-  .board-section, .pieces-section {
+
+  .board-section,
+  .pieces-section {
     width: 100%;
     max-width: 500px;
   }
-  
+
   .board-container {
     width: 100%;
     max-width: 450px;
     height: auto;
     aspect-ratio: 1 / 1;
   }
-  
+
   .controls {
     width: 100%;
     max-width: 450px;
   }
-  
+
   .available-pieces {
     width: 100%;
     min-height: 120px;
@@ -592,63 +607,63 @@ button:active {
   .app {
     padding: 10px;
   }
-  
+
   .app-title {
     margin-bottom: 30px;
   }
-  
+
   .crown-icon {
     font-size: 2.7rem;
   }
-  
+
   .app-subtitle {
     font-size: 1.1rem;
     bottom: -25px;
   }
-  
+
   .board-container {
     width: 100%;
     max-width: 100%;
     height: auto;
     aspect-ratio: 1 / 1;
   }
-  
+
   .controls {
     width: 100%;
     max-width: 100%;
     flex-wrap: wrap;
   }
-  
+
   .control-button {
     max-width: none;
     flex: 1 1 calc(50% - 10px);
     min-width: 120px;
   }
-  
+
   .piece {
     padding: 5px;
     min-height: 35px;
   }
-  
+
   .piece-symbol {
     font-size: 18px;
   }
-  
+
   .instructions p {
     font-size: 12px;
   }
-  
+
   button {
     padding: 8px 12px;
     font-size: 13px;
   }
-  
+
   .available-pieces {
     width: 100%;
     min-height: 140px;
     padding: 10px;
   }
-  
+
   .pieces-section {
     max-width: 200px;
   }
@@ -679,16 +694,16 @@ button:active {
     padding: 8px;
     overflow-x: hidden;
   }
-  
+
   .app-title {
     font-size: 2.2rem;
     margin-bottom: 10px;
   }
-  
+
   .crown-icon {
     font-size: 2.4rem;
   }
-  
+
   .app-subtitle {
     font-size: 1rem;
     bottom: -22px;
@@ -905,7 +920,7 @@ button:active {
     color: white;
   }
 
-  .about-content p, 
+  .about-content p,
   .about-content li,
   .instructions-list li {
     font-size: 12px;
@@ -997,11 +1012,11 @@ button:active {
     -webkit-tap-highlight-color: transparent;
     user-select: none;
   }
-  
+
   .team-tab:active {
     background-color: transparent;
   }
-  
+
   .team-tab.active {
     color: white;
     background-color: #34495e;
@@ -1029,7 +1044,7 @@ button:active {
   padding: 12px;
   background: #f5f5f5;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 250px;
 }
@@ -1065,7 +1080,7 @@ button:active {
   color: #ffffff; /* Texte en blanc pour une meilleure lisibilité */
   font-weight: bold;
   font-size: 14px;
-  text-shadow: 0px 0px 2px rgba(0,0,0,0.5); /* Ombre pour améliorer la lisibilité */
+  text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.5); /* Ombre pour améliorer la lisibilité */
 }
 
 .legend-color.green {
@@ -1108,7 +1123,7 @@ button:active {
   margin: 20px auto;
   background-color: #f5f5f5;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
